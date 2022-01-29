@@ -7,67 +7,51 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using WebSocketSharp;
 
 namespace QuestEyes_Server
-{
+{ 
     public partial class Main : Form
     {
+        Diagnostics diagnosticsWindow = new Diagnostics();
+        public static Label connectionStatus;
+        public static Label batteryStatus;
+        public static Label firmwareVersion;
+        public static Label leftEyeYStatus;
+        public static Label leftEyeXStatus;
+        public static Label rightEyeYStatus;
+        public static Label rightEyeXStatus;
+
         public Main()
         {
             InitializeComponent();
+            connectionStatus = conStat;
+            batteryStatus = batPercentage;
+            firmwareVersion = firmwareVer;
+            leftEyeYStatus = rightDetect;
+            leftEyeXStatus = leftDetect;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //Create websocket client instance
-            //CHANGE THE IP TO BE PART OF THE SEARCH SYSTEM
+            this.Activated += AfterLoading;
+        }
+
+        private void AfterLoading(object sender, EventArgs e)
+        {
+            this.Activated -= AfterLoading;
             string url = "ws://192.168.1.237:81";
-            WebSocket ws = new WebSocket(url);
-
-            ws.OnMessage += Ws_OnMessage;
-            ws.OnClose += Ws_OnClose;
-
-            Console.WriteLine("Attempting to connect to " + url);
-            ws.Connect();
+            Networking.Connect(url);
         }
 
-        private void Ws_OnMessage(object sender, MessageEventArgs e)
+        private void checkFirmUpdate_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Received: " + e.Data);
-            if (e.IsBinary == false) //Message from system
-            {
-                //IF FIRMWARE_VER, TREAT AS FIRMWARE VERSION
-                //IF EXCESSIVE_FRAME_FAILURE, TREAT AS DEVICE ERROR, DISCONNECT AND EXPECT REBOOT
-                if (e.Data.Contains("FIRMWARE_VER"))
-                {
-                    string[] split = e.Data.Split(' ');
-                    Console.WriteLine("Successful connection confirmed.");
-                    conStat.Invoke((MethodInvoker)delegate
-                    {
-                        conStat.Text = "Connected";
-                        conStat.ForeColor = Color.Green;
-                    });
-                    firmwareVer.Invoke((MethodInvoker)delegate
-                    {
-                        firmwareVer.Text = "Firmware version: " + split[1];
-                    });
-                }
-            }
-            else //Image from system
-            {
 
-            }
         }
 
-        private void Ws_OnClose(object sender, CloseEventArgs e)
+        private void diagnostics_Click(object sender, EventArgs e)
         {
-            Console.WriteLine("Connection was lost or couldn't be established");
-            conStat.Invoke((MethodInvoker)delegate
-            {
-                conStat.ForeColor = Color.FromArgb(192, 0, 0);
-                conStat.Text = "Disconnected";
-            });
+            Diagnostics diagnosticsWindow = new Diagnostics();
+            diagnosticsWindow.Show();
         }
     }
 }
