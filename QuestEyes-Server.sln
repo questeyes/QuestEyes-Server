@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32106.194
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuestEyes-Server", "QuestEyes-Server\QuestEyes-Server.csproj", "{EE54BA26-CCA0-4C5C-84AF-BDA4CEE3D6E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EE54BA26-CCA0-4C5C-84AF-BDA4CEE3D6E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE54BA26-CCA0-4C5C-84AF-BDA4CEE3D6E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE54BA26-CCA0-4C5C-84AF-BDA4CEE3D6E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE54BA26-CCA0-4C5C-84AF-BDA4CEE3D6E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3E5391A6-CA22-46FA-8DF8-6B44D8528FB7}
+	EndGlobalSection
+EndGlobal
