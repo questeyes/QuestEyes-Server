@@ -37,8 +37,6 @@ namespace QuestEyes_Server
             this.forceReconnect = new System.Windows.Forms.Button();
             this.conStat = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.rightDetect = new System.Windows.Forms.Label();
-            this.leftDetect = new System.Windows.Forms.Label();
             this.diagnostics = new System.Windows.Forms.Button();
             this.resetDevice = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
@@ -58,7 +56,7 @@ namespace QuestEyes_Server
             // 
             this.conStatLabel.AutoSize = true;
             this.conStatLabel.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.conStatLabel.Location = new System.Drawing.Point(12, 52);
+            this.conStatLabel.Location = new System.Drawing.Point(12, 51);
             this.conStatLabel.Name = "conStatLabel";
             this.conStatLabel.Size = new System.Drawing.Size(95, 13);
             this.conStatLabel.TabIndex = 1;
@@ -68,7 +66,7 @@ namespace QuestEyes_Server
             // 
             this.batPercentage.AutoSize = true;
             this.batPercentage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.batPercentage.Location = new System.Drawing.Point(12, 85);
+            this.batPercentage.Location = new System.Drawing.Point(12, 80);
             this.batPercentage.Name = "batPercentage";
             this.batPercentage.Size = new System.Drawing.Size(149, 13);
             this.batPercentage.TabIndex = 2;
@@ -78,7 +76,7 @@ namespace QuestEyes_Server
             // 
             this.firmwareVer.AutoSize = true;
             this.firmwareVer.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.firmwareVer.Location = new System.Drawing.Point(12, 98);
+            this.firmwareVer.Location = new System.Drawing.Point(12, 93);
             this.firmwareVer.Name = "firmwareVer";
             this.firmwareVer.Size = new System.Drawing.Size(138, 13);
             this.firmwareVer.TabIndex = 3;
@@ -87,7 +85,7 @@ namespace QuestEyes_Server
             // checkFirmUpdate
             // 
             this.checkFirmUpdate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.checkFirmUpdate.Location = new System.Drawing.Point(12, 179);
+            this.checkFirmUpdate.Location = new System.Drawing.Point(12, 123);
             this.checkFirmUpdate.Name = "checkFirmUpdate";
             this.checkFirmUpdate.Size = new System.Drawing.Size(177, 23);
             this.checkFirmUpdate.TabIndex = 4;
@@ -97,24 +95,26 @@ namespace QuestEyes_Server
             // 
             // forceReconnect
             // 
+            this.forceReconnect.Enabled = false;
             this.forceReconnect.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.forceReconnect.Location = new System.Drawing.Point(195, 179);
+            this.forceReconnect.Location = new System.Drawing.Point(195, 123);
             this.forceReconnect.Name = "forceReconnect";
             this.forceReconnect.Size = new System.Drawing.Size(177, 23);
             this.forceReconnect.TabIndex = 5;
-            this.forceReconnect.Text = "Force reconnect QuestEyes device";
+            this.forceReconnect.Text = "Reconnect QuestEyes device";
             this.forceReconnect.UseVisualStyleBackColor = true;
+            this.forceReconnect.Click += new System.EventHandler(this.forceReconnect_Click);
             // 
             // conStat
             // 
             this.conStat.AutoSize = true;
             this.conStat.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.conStat.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(0)))), ((int)(((byte)(0)))));
-            this.conStat.Location = new System.Drawing.Point(104, 52);
+            this.conStat.Location = new System.Drawing.Point(104, 51);
             this.conStat.Name = "conStat";
-            this.conStat.Size = new System.Drawing.Size(73, 13);
+            this.conStat.Size = new System.Drawing.Size(64, 13);
             this.conStat.TabIndex = 10;
-            this.conStat.Text = "Disconnected";
+            this.conStat.Text = "Searching...";
             // 
             // panel1
             // 
@@ -124,30 +124,10 @@ namespace QuestEyes_Server
             this.panel1.Size = new System.Drawing.Size(388, 40);
             this.panel1.TabIndex = 11;
             // 
-            // rightDetect
-            // 
-            this.rightDetect.AutoSize = true;
-            this.rightDetect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rightDetect.Location = new System.Drawing.Point(12, 130);
-            this.rightDetect.Name = "rightDetect";
-            this.rightDetect.Size = new System.Drawing.Size(120, 13);
-            this.rightDetect.TabIndex = 12;
-            this.rightDetect.Text = "Right eye: Not detected";
-            // 
-            // leftDetect
-            // 
-            this.leftDetect.AutoSize = true;
-            this.leftDetect.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.leftDetect.Location = new System.Drawing.Point(12, 143);
-            this.leftDetect.Name = "leftDetect";
-            this.leftDetect.Size = new System.Drawing.Size(113, 13);
-            this.leftDetect.TabIndex = 13;
-            this.leftDetect.Text = "Left eye: Not detected";
-            // 
             // diagnostics
             // 
             this.diagnostics.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.diagnostics.Location = new System.Drawing.Point(195, 206);
+            this.diagnostics.Location = new System.Drawing.Point(195, 150);
             this.diagnostics.Name = "diagnostics";
             this.diagnostics.Size = new System.Drawing.Size(177, 23);
             this.diagnostics.TabIndex = 15;
@@ -158,7 +138,7 @@ namespace QuestEyes_Server
             // resetDevice
             // 
             this.resetDevice.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.resetDevice.Location = new System.Drawing.Point(12, 206);
+            this.resetDevice.Location = new System.Drawing.Point(12, 150);
             this.resetDevice.Name = "resetDevice";
             this.resetDevice.Size = new System.Drawing.Size(177, 23);
             this.resetDevice.TabIndex = 14;
@@ -170,11 +150,9 @@ namespace QuestEyes_Server
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
-            this.ClientSize = new System.Drawing.Size(384, 236);
+            this.ClientSize = new System.Drawing.Size(384, 181);
             this.Controls.Add(this.diagnostics);
             this.Controls.Add(this.resetDevice);
-            this.Controls.Add(this.leftDetect);
-            this.Controls.Add(this.rightDetect);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.conStat);
             this.Controls.Add(this.forceReconnect);
@@ -204,8 +182,6 @@ namespace QuestEyes_Server
         private System.Windows.Forms.Button forceReconnect;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label conStat;
-        private System.Windows.Forms.Label rightDetect;
-        private System.Windows.Forms.Label leftDetect;
         private System.Windows.Forms.Button diagnostics;
         private System.Windows.Forms.Button resetDevice;
     }
