@@ -12,14 +12,11 @@ namespace QuestEyes_Server
 { 
     public partial class Main : Form
     {
-        Diagnostics diagnosticsWindow = new Diagnostics();
+        public Diagnostics diagnosticsWindow = new Diagnostics();
         public static Label connectionStatus;
         public static Label batteryStatus;
         public static Label firmwareVersion;
-        public static Label leftEyeYStatus;
-        public static Label leftEyeXStatus;
-        public static Label rightEyeYStatus;
-        public static Label rightEyeXStatus;
+        public static Button reconnectButton;
 
         public Main()
         {
@@ -27,20 +24,21 @@ namespace QuestEyes_Server
             connectionStatus = conStat;
             batteryStatus = batPercentage;
             firmwareVersion = firmwareVer;
-            leftEyeYStatus = rightDetect;
-            leftEyeXStatus = leftDetect;
+            reconnectButton = forceReconnect;
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            this.Activated += AfterLoading;
+            Activated += AfterLoading;
         }
 
         private void AfterLoading(object sender, EventArgs e)
         {
-            this.Activated -= AfterLoading;
-            string url = "ws://192.168.1.237:81";
-            Networking.Connect(url);
+            Activated -= AfterLoading;
+            Task.Run(() =>
+            {
+                Networking.Search();
+            });
         }
 
         private void checkFirmUpdate_Click(object sender, EventArgs e)
@@ -52,6 +50,12 @@ namespace QuestEyes_Server
         {
             Diagnostics diagnosticsWindow = new Diagnostics();
             diagnosticsWindow.Show();
+        }
+
+        private void forceReconnect_Click(object sender, EventArgs e)
+        {
+            Networking.ws.Close();
+            Networking.connected = false;
         }
     }
 }
