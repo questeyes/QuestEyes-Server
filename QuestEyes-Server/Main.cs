@@ -1,10 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -12,11 +6,12 @@ namespace QuestEyes_Server
 { 
     public partial class Main : Form
     {
-        public Diagnostics diagnosticsWindow = new Diagnostics();
+        public static Diagnostics diagnosticsWindow;
         public static Label connectionStatus;
         public static Label batteryStatus;
         public static Label firmwareVersion;
         public static Button reconnectButton;
+        public static RichTextBox console;
 
         public Main()
         {
@@ -25,6 +20,7 @@ namespace QuestEyes_Server
             batteryStatus = batPercentage;
             firmwareVersion = firmwareVer;
             reconnectButton = forceReconnect;
+            console = consoleBox;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -41,21 +37,41 @@ namespace QuestEyes_Server
             });
         }
 
+        private void diagnostics_Click(object sender, EventArgs e)
+        {
+            if (Diagnostics.diagnosticsOpen == false)
+            {
+                Diagnostics diagnosticsWindow = new Diagnostics();
+                diagnosticsWindow.Show();
+            }
+        }
+
+        private void infoButton_Click(object sender, EventArgs e)
+        {
+            if (About.aboutOpen == false)
+            {
+                About aboutWindow = new About();
+                aboutWindow.Show();
+            }
+        }
+
+        private void forceReconnect_Click(object sender, EventArgs e)
+        {
+            SupportFunctions.outConn("Forcing reconnect per user request...");
+            Task.Run(() =>
+            {
+                Networking.communicationSocket.Close();
+            });
+        }
+
         private void checkFirmUpdate_Click(object sender, EventArgs e)
         {
 
         }
 
-        private void diagnostics_Click(object sender, EventArgs e)
+        private void resetDevice_Click(object sender, EventArgs e)
         {
-            Diagnostics diagnosticsWindow = new Diagnostics();
-            diagnosticsWindow.Show();
-        }
 
-        private void forceReconnect_Click(object sender, EventArgs e)
-        {
-            Networking.ws.Close();
-            Networking.connected = false;
         }
     }
 }

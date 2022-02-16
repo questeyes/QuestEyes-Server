@@ -1,60 +1,61 @@
 ﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Windows.Media.Imaging;
-using WebSocketSharp;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.RegularExpressions;
+using System.Windows.Media.Imaging;
+using WebSocketSharp;
+using System.Timers;
 
 namespace QuestEyes_Server
 {
     class Networking
     {
-        public static WebSocket ws;
-        public static bool connecting = false;
+        /** 
+         * PORTS:
+         *  7579 device discovery port
+         *  7580 command/stream socket
+        **/
+        public static UdpClient discoverPort = new UdpClient(7579);
+        public static WebSocket communicationSocket;
+
+        public static string url = null;
         public static bool connected = false;
+        public static bool attemptingConnect = false;
+        public static System.Timers.Timer heartbeatTimer;
+
+        public static string packet = null;
+        public static string[] packetInfo = new string[0];
+        private static string DeviceIP;
 
         public static void Search()
         {
             Task.Run(async () =>
             {
-                using (var udpClient = new UdpClient(7579))
+                while (true)
                 {
-                    Console.WriteLine("Listening for device...");
-                    string rMessage = "";
-                    string[] rArgs = new string[0];
-                    while (true)
+                    while (connected == false && attemptingConnect == false)
                     {
-                        while (connected == false && connecting == false)
+                        SupportFunctions.outConn("Listening for device...");
+                        Main.reconnectButton.Invoke((MethodInvoker)delegate
                         {
-                            Main.reconnectButton.Invoke((MethodInvoker)delegate
-                            {
-                                Main.reconnectButton.Enabled = false;
-                            });
-                            var receivedResults = await udpClient.ReceiveAsync();
-                            rMessage += Encoding.ASCII.GetString(receivedResults.Buffer);
-                            rArgs = rMessage.Split(new char[] { ':' });
-                            if (rArgs[0] == ("QUESTEYE_REQ_CONN"))
-                            {
-                                connecting = true;
-                                string str = rArgs[2];
-
-                                str = Regex.Replace(str, "[^0-9.]", String.Empty);
-                                Console.WriteLine("Detected " + rArgs[1]);
-                                Console.WriteLine("Attempting connection to " + rArgs[1]);
-                                string url = "ws://" + str + ":7580";
-                                try
-                                {
-                                    Networking.Connect(url);
-                                }
-                                catch
-                                {
-                                    Console.WriteLine("Connection error.");
-                                    connecting = false;
-                                }
-                            }
+                            Main.reconnectButton.Enabled = false;
+                        });
+                        packet = null;
+                        packetInfo = new string[0];
+                        var receivedResults = await discoverPort.ReceiveAsync();
+                        packet += Encoding.ASCII.GetString(receivedResults.Buffer);
+                        packetInfo = packet.Split(new char[] { ':' });
+                        if (packetInfo[0] == ("QUESTEYE_REQ_CONN"))
+                        {
+                            attemptingConnect = true;
+                            string hostname = packetInfo[1];
+                            DeviceIP = packetInfo[2];
+                            SupportFunctions.outConn("Detected " + hostname);
+                            SupportFunctions.outConn("Attempting connection to " + hostname);
+                            url = "ws://" + DeviceIP + ":7580";
+                            Connect(url);
                         }
                     }
                 }
@@ -70,13 +71,14 @@ namespace QuestEyes_Server
             });
 
             //Create websocket client instance
-            ws = new WebSocket(url);
+            communicationSocket = new WebSocket(url);
 
-            ws.OnMessage += Ws_OnMessage;
-            ws.OnClose += Ws_OnClose;
-            ws.OnError += Ws_OnError;
+            communicationSocket.OnMessage += Ws_OnMessage;
+            communicationSocket.OnClose += Ws_OnClose;
+            communicationSocket.OnError += Ws_OnError;
 
-            ws.ConnectAsync();
+            //Attempt connection
+            communicationSocket.ConnectAsync();
         }
 
         private static void Ws_OnMessage(object sender, MessageEventArgs e)
@@ -86,70 +88,86 @@ namespace QuestEyes_Server
                 //IF NAME, TREAT AS DEVICE NAME
                 //IF FIRMWARE_VER, TREAT AS FIRMWARE VERSION
                 //IF BATTERY, TREAT AS BATTERY LEVEL
-                //IF HEARTBEAT, TREAT AS A KEEPALIVE MESSAGE
                 //IF EXCESSIVE_FRAME_FAILURE, TREAT AS DEVICE ERROR, DISCONNECT AND EXPECT REBOOT
                 if (e.Data.Contains("NAME"))
                 {
-                    Console.WriteLine("Successful connection confirmed");
+                    SupportFunctions.outConn("CONNECTED");
+                    SupportFunctions.outConn("Successful connection confirmed");
                     connected = true;
-                    connecting = false;
+                    attemptingConnect = false;
+                    heartbeatTimer = new System.Timers.Timer(10000);
+                    heartbeatTimer.Elapsed += OnHeartbeatFailure;
+                    heartbeatTimer.AutoReset = true;
+                    heartbeatTimer.Enabled = true;
                     Main.reconnectButton.Invoke((MethodInvoker)delegate
                     {
                         Main.reconnectButton.Enabled = true;
                     });
-                    Console.WriteLine(e.Data);
+                    SupportFunctions.outConn("[->] " + e.Data);
                     string[] split = e.Data.Split(' ');
                     Main.connectionStatus.Invoke((MethodInvoker)delegate
                     {
                         Main.connectionStatus.Text = "Connected to " + split[1];
                         Main.connectionStatus.ForeColor = Color.Green;
                     });
+                    return;
                 }
                 if (e.Data.Contains("FIRMWARE_VER"))
                 {
-                    Console.WriteLine(e.Data);
+                    SupportFunctions.outConn("[->] " + e.Data);
                     string[] split = e.Data.Split(' ');
                     Main.firmwareVersion.Invoke((MethodInvoker)delegate
                     {
                         Main.firmwareVersion.Text = "Firmware version: " + split[1];
                     });
+                    return;
                 }
                 if (e.Data.Contains("BATTERY"))
                 {
 
+                    return;
                 }
                 if (e.Data.Contains("HEARTBEAT"))
                 {
-                    
+                    SupportFunctions.outConn("HEARTBEAT");
+                    heartbeatTimer.Interval = 10000;
+                    return;
                 }
                 if (e.Data.Contains("EXCESSIVE_FRAME_FAILURE"))
                 {
 
+                    return;
+                }
+                else
+                {
+                    SupportFunctions.outConn("Invalid command received from device: " + e.Data);
+                    return;
                 }
             }
-
             else if (e.IsBinary) //Image from system
             {
                 BitmapImage image = CamFeed.Decode(e.RawData);
-                Diagnostics.pictureBox.Image = MakeNet2BitmapFromWPFBitmapSource(image);
+                if (Diagnostics.diagnosticsOpen == true)
+                {
+                    SupportFunctions.DiagnosticsUpdate(image);
+                }
             }
         }
 
-        public static Bitmap MakeNet2BitmapFromWPFBitmapSource(BitmapSource src)
+        private static void OnHeartbeatFailure(object sender, ElapsedEventArgs e)
         {
-            try
-            {
-                System.IO.MemoryStream TransportStream = new System.IO.MemoryStream();
-                BitmapEncoder enc = new BmpBitmapEncoder();
-                enc.Frames.Add(BitmapFrame.Create(src));
-                enc.Save(TransportStream);
-                return new Bitmap(TransportStream);
-            }
-            catch { Console.WriteLine("Could not convert image"); return null; }
+            //heartbeat was failed to be received within 10 seconds...
+            SupportFunctions.outConn("TIMEOUT");
+            heartbeatTimer.Stop();
+            heartbeatTimer.Close();
+            communicationSocket.Close();
         }
 
         private static void Ws_OnClose(object sender, CloseEventArgs e)
         {
+            SupportFunctions.outConn("DISCONNECTED");
+            heartbeatTimer.Stop();
+            heartbeatTimer.Close();
             Main.connectionStatus.Invoke((MethodInvoker)delegate
             {
                 Main.connectionStatus.ForeColor = Color.FromArgb(192, 0, 0);
@@ -157,13 +175,28 @@ namespace QuestEyes_Server
                 Main.batteryStatus.Text = "Battery percentage: Unknown";
                 Main.firmwareVersion.Text = "Firmware version: Unknown";
             });
-            connecting = false;
+            packetInfo = new string[0];
+            packet = null;
+            url = null;
+
             connected = false;
+            attemptingConnect = false;
+
+
+            if (Diagnostics.diagnosticsOpen == true)
+            {
+                Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                {
+                    Diagnostics.decodeError.Visible = true;
+                });
+            }
         }
 
         private static void Ws_OnError(object sender, ErrorEventArgs e)
         {
-            ws.Close();
+            SupportFunctions.outConn("Socket error: " + e);
+            SupportFunctions.outConn("Closing connection");
+            communicationSocket.Close();
         }
     }
 }

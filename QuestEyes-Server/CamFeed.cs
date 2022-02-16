@@ -8,13 +8,20 @@ namespace QuestEyes_Server
     {
         public static BitmapImage Decode(Binary data)
         {
-            byte[] buffer = data.ToArray();
-            MemoryStream stream = new MemoryStream(buffer);
-            BitmapImage image = new BitmapImage();
-            image.BeginInit();
-            image.StreamSource = stream;
-            image.EndInit();
-            return image;
+            try
+            {
+                byte[] buffer = data.ToArray();
+                MemoryStream stream = new MemoryStream(buffer);
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.StreamSource = stream;
+                image.EndInit();
+                return image;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }
