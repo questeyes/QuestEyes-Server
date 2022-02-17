@@ -17,7 +17,7 @@ namespace QuestEyes_Server
          *  7579 device discovery port
          *  7580 command/stream socket
         **/
-        public static UdpClient discoverPort = new UdpClient(7579);
+        public static UdpClient discoverPort;
         public static WebSocket communicationSocket;
 
         public static string url = null;
@@ -27,7 +27,11 @@ namespace QuestEyes_Server
 
         public static string packet = null;
         public static string[] packetInfo = new string[0];
+
         private static string DeviceIP;
+        public static string DeviceName;
+        public static string DeviceFirmware;
+        public static string DeviceMode = "NORMAL";
 
         public static void Search()
         {
@@ -41,14 +45,17 @@ namespace QuestEyes_Server
                         Main.reconnectButton.Invoke((MethodInvoker)delegate
                         {
                             Main.reconnectButton.Enabled = false;
+                            Main.updateButton.Enabled = false;
                         });
                         packet = null;
                         packetInfo = new string[0];
+                        discoverPort = new UdpClient(7579);
                         var receivedResults = await discoverPort.ReceiveAsync();
                         packet += Encoding.ASCII.GetString(receivedResults.Buffer);
                         packetInfo = packet.Split(new char[] { ':' });
                         if (packetInfo[0] == ("QUESTEYE_REQ_CONN"))
                         {
+                            discoverPort.Close();
                             attemptingConnect = true;
                             string hostname = packetInfo[1];
                             DeviceIP = packetInfo[2];
@@ -91,7 +98,6 @@ namespace QuestEyes_Server
                 //IF EXCESSIVE_FRAME_FAILURE, TREAT AS DEVICE ERROR, DISCONNECT AND EXPECT REBOOT
                 if (e.Data.Contains("NAME"))
                 {
-                    SupportFunctions.outConn("CONNECTED");
                     SupportFunctions.outConn("Successful connection confirmed");
                     connected = true;
                     attemptingConnect = false;
@@ -102,24 +108,26 @@ namespace QuestEyes_Server
                     Main.reconnectButton.Invoke((MethodInvoker)delegate
                     {
                         Main.reconnectButton.Enabled = true;
+                        Main.updateButton.Enabled = true;
                     });
-                    SupportFunctions.outConn("[->] " + e.Data);
                     string[] split = e.Data.Split(' ');
                     Main.connectionStatus.Invoke((MethodInvoker)delegate
                     {
                         Main.connectionStatus.Text = "Connected to " + split[1];
                         Main.connectionStatus.ForeColor = Color.Green;
                     });
+                    DeviceName = split[1];
                     return;
                 }
                 if (e.Data.Contains("FIRMWARE_VER"))
                 {
-                    SupportFunctions.outConn("[->] " + e.Data);
                     string[] split = e.Data.Split(' ');
                     Main.firmwareVersion.Invoke((MethodInvoker)delegate
                     {
-                        Main.firmwareVersion.Text = "Firmware version: " + split[1];
+                        Main.firmwareVersion.Text = "Device firmware version: " + split[1];
                     });
+                    SupportFunctions.outConn("Device reported firmware version " + split[1]);
+                    DeviceFirmware = split[1];
                     return;
                 }
                 if (e.Data.Contains("BATTERY"))
@@ -129,14 +137,27 @@ namespace QuestEyes_Server
                 }
                 if (e.Data.Contains("HEARTBEAT"))
                 {
-                    SupportFunctions.outConn("HEARTBEAT");
                     heartbeatTimer.Interval = 10000;
                     return;
                 }
                 if (e.Data.Contains("EXCESSIVE_FRAME_FAILURE"))
                 {
-
+                    SupportFunctions.outConn("ERROR: Device reported excessive frame failure, disconnecting...");
+                    heartbeatTimer.Stop();
+                    heartbeatTimer.Close();
+                    communicationSocket.Close();
                     return;
+                }
+                if (e.Data.Contains("OTA_MODE_ACTIVE"))
+                {
+                    SupportFunctions.outConn("Device has entered OTA mode.");
+                    Main.connectionStatus.Invoke((MethodInvoker)delegate
+                    {
+                        Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
+                        Main.connectionStatus.Text = "Connected in OTA mode";
+                    });
+                    //ota logic here
+                    DeviceMode = "OTA";
                 }
                 else
                 {
@@ -157,7 +178,7 @@ namespace QuestEyes_Server
         private static void OnHeartbeatFailure(object sender, ElapsedEventArgs e)
         {
             //heartbeat was failed to be received within 10 seconds...
-            SupportFunctions.outConn("TIMEOUT");
+            SupportFunctions.outConn("ERROR: Device timed out, Disconnecting...");
             heartbeatTimer.Stop();
             heartbeatTimer.Close();
             communicationSocket.Close();
@@ -165,7 +186,7 @@ namespace QuestEyes_Server
 
         private static void Ws_OnClose(object sender, CloseEventArgs e)
         {
-            SupportFunctions.outConn("DISCONNECTED");
+            SupportFunctions.outConn("Disconnected from device");
             heartbeatTimer.Stop();
             heartbeatTimer.Close();
             Main.connectionStatus.Invoke((MethodInvoker)delegate

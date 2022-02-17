@@ -11,6 +11,7 @@ namespace QuestEyes_Server
         public static Label batteryStatus;
         public static Label firmwareVersion;
         public static Button reconnectButton;
+        public static Button updateButton;
         public static RichTextBox console;
 
         public Main()
@@ -20,6 +21,7 @@ namespace QuestEyes_Server
             batteryStatus = batPercentage;
             firmwareVersion = firmwareVer;
             reconnectButton = forceReconnect;
+            updateButton = checkFirmUpdate;
             console = consoleBox;
         }
 
@@ -66,7 +68,11 @@ namespace QuestEyes_Server
 
         private void checkFirmUpdate_Click(object sender, EventArgs e)
         {
-
+            if (Updater.updaterOpen == false)
+            {
+                Updater updater = new Updater();
+                updater.Show();
+            }
         }
 
         private void resetDevice_Click(object sender, EventArgs e)

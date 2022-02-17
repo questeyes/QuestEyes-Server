@@ -33,7 +33,6 @@ namespace QuestEyes_Server
             this.firmwareVer = new System.Windows.Forms.Label();
             this.checkFirmUpdate = new System.Windows.Forms.Button();
             this.forceReconnect = new System.Windows.Forms.Button();
-            this.infoButton = new System.Windows.Forms.Button();
             this.diagnostics = new System.Windows.Forms.Button();
             this.resetDevice = new System.Windows.Forms.Button();
             this.title = new System.Windows.Forms.Label();
@@ -43,6 +42,8 @@ namespace QuestEyes_Server
             this.conStatLabel = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
+            this.infoButton = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -54,9 +55,9 @@ namespace QuestEyes_Server
             this.batPercentage.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.batPercentage.Location = new System.Drawing.Point(4, 9);
             this.batPercentage.Name = "batPercentage";
-            this.batPercentage.Size = new System.Drawing.Size(192, 19);
+            this.batPercentage.Size = new System.Drawing.Size(237, 19);
             this.batPercentage.TabIndex = 2;
-            this.batPercentage.Text = "Battery percentage: Unknown";
+            this.batPercentage.Text = "Device battery percentage: Unknown";
             // 
             // firmwareVer
             // 
@@ -64,9 +65,9 @@ namespace QuestEyes_Server
             this.firmwareVer.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.firmwareVer.Location = new System.Drawing.Point(4, 9);
             this.firmwareVer.Name = "firmwareVer";
-            this.firmwareVer.Size = new System.Drawing.Size(179, 19);
+            this.firmwareVer.Size = new System.Drawing.Size(222, 19);
             this.firmwareVer.TabIndex = 3;
-            this.firmwareVer.Text = "Firmware version: Unknown";
+            this.firmwareVer.Text = "Device firmware version: Unknown";
             // 
             // checkFirmUpdate
             // 
@@ -75,7 +76,7 @@ namespace QuestEyes_Server
             this.checkFirmUpdate.Location = new System.Drawing.Point(12, 205);
             this.checkFirmUpdate.Name = "checkFirmUpdate";
             this.checkFirmUpdate.Size = new System.Drawing.Size(177, 23);
-            this.checkFirmUpdate.TabIndex = 4;
+            this.checkFirmUpdate.TabIndex = 1;
             this.checkFirmUpdate.Text = "Check for firmware updates";
             this.checkFirmUpdate.UseVisualStyleBackColor = true;
             this.checkFirmUpdate.Click += new System.EventHandler(this.checkFirmUpdate_Click);
@@ -87,21 +88,10 @@ namespace QuestEyes_Server
             this.forceReconnect.Location = new System.Drawing.Point(195, 205);
             this.forceReconnect.Name = "forceReconnect";
             this.forceReconnect.Size = new System.Drawing.Size(177, 23);
-            this.forceReconnect.TabIndex = 5;
+            this.forceReconnect.TabIndex = 2;
             this.forceReconnect.Text = "Reconnect QuestEyes device";
             this.forceReconnect.UseVisualStyleBackColor = true;
             this.forceReconnect.Click += new System.EventHandler(this.forceReconnect_Click);
-            // 
-            // infoButton
-            // 
-            this.infoButton.BackgroundImage = global::QuestEyes_Server.Properties.Resources.information;
-            this.infoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.infoButton.Location = new System.Drawing.Point(356, 346);
-            this.infoButton.Name = "infoButton";
-            this.infoButton.Size = new System.Drawing.Size(25, 25);
-            this.infoButton.TabIndex = 16;
-            this.infoButton.UseVisualStyleBackColor = true;
-            this.infoButton.Click += new System.EventHandler(this.infoButton_Click);
             // 
             // diagnostics
             // 
@@ -109,7 +99,7 @@ namespace QuestEyes_Server
             this.diagnostics.Location = new System.Drawing.Point(195, 232);
             this.diagnostics.Name = "diagnostics";
             this.diagnostics.Size = new System.Drawing.Size(177, 23);
-            this.diagnostics.TabIndex = 15;
+            this.diagnostics.TabIndex = 4;
             this.diagnostics.Text = "Diagnostics";
             this.diagnostics.UseVisualStyleBackColor = true;
             this.diagnostics.Click += new System.EventHandler(this.diagnostics_Click);
@@ -121,7 +111,7 @@ namespace QuestEyes_Server
             this.resetDevice.Location = new System.Drawing.Point(12, 232);
             this.resetDevice.Name = "resetDevice";
             this.resetDevice.Size = new System.Drawing.Size(177, 23);
-            this.resetDevice.TabIndex = 14;
+            this.resetDevice.TabIndex = 3;
             this.resetDevice.Text = "Factory reset device";
             this.resetDevice.UseVisualStyleBackColor = true;
             this.resetDevice.Click += new System.EventHandler(this.resetDevice_Click);
@@ -144,6 +134,7 @@ namespace QuestEyes_Server
             this.consoleBox.Cursor = System.Windows.Forms.Cursors.Default;
             this.consoleBox.DetectUrls = false;
             this.consoleBox.ForeColor = System.Drawing.SystemColors.Window;
+            this.consoleBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
             this.consoleBox.Location = new System.Drawing.Point(12, 270);
             this.consoleBox.Name = "consoleBox";
             this.consoleBox.ReadOnly = true;
@@ -203,12 +194,35 @@ namespace QuestEyes_Server
             this.panel3.Size = new System.Drawing.Size(360, 36);
             this.panel3.TabIndex = 19;
             // 
+            // infoButton
+            // 
+            this.infoButton.BackgroundImage = global::QuestEyes_Server.Properties.Resources.information;
+            this.infoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.infoButton.Location = new System.Drawing.Point(347, 346);
+            this.infoButton.Name = "infoButton";
+            this.infoButton.Size = new System.Drawing.Size(25, 25);
+            this.infoButton.TabIndex = 5;
+            this.infoButton.UseVisualStyleBackColor = true;
+            this.infoButton.Click += new System.EventHandler(this.infoButton_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.SystemColors.Control;
+            this.label1.Location = new System.Drawing.Point(9, 350);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(172, 16);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "QuestEyes PC App version 1.1.0";
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(65)))), ((int)(((byte)(217)))));
             this.ClientSize = new System.Drawing.Size(384, 377);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel3);
             this.Controls.Add(this.panel1);
@@ -250,6 +264,7 @@ namespace QuestEyes_Server
         private System.Windows.Forms.Label conStat;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
+        private System.Windows.Forms.Label label1;
     }
 }
 

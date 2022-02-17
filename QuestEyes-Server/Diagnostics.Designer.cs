@@ -99,7 +99,7 @@ namespace QuestEyes_Server
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonShadow;
-            this.label1.Location = new System.Drawing.Point(246, 604);
+            this.label1.Location = new System.Drawing.Point(246, 600);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(308, 13);
             this.label1.TabIndex = 18;
@@ -135,7 +135,7 @@ namespace QuestEyes_Server
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.MaximizeBox = false;
             this.Name = "Diagnostics";
-            this.Text = "Diagnostics";
+            this.Text = "QuestEyes Diagnostics";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Diagnostics_FormClosing);
             this.Load += new System.EventHandler(this.Diagnostics_Load);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
