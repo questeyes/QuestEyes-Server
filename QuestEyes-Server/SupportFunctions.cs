@@ -1,6 +1,4 @@
-﻿using System;
-using System.Drawing;
-using System.Windows.Media.Imaging;
+﻿using System.Drawing;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -24,15 +22,15 @@ namespace QuestEyes_Server
             });
         }
 
-        public static void DiagnosticsUpdate(BitmapSource receivedFrame)
+        public static void DiagnosticsUpdateTrue(Bitmap truePic)
         {
             Task.Run(() =>
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    Diagnostics.pictureBox.Invoke((MethodInvoker)delegate
+                    Diagnostics.truePicture.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.pictureBox.Image = MakeNet2BitmapFromWPFBitmapSource(receivedFrame);
+                        Diagnostics.truePicture.Image = truePic;
                     });
                     Diagnostics.decodeError.Invoke((MethodInvoker)delegate
                     {
@@ -46,17 +44,48 @@ namespace QuestEyes_Server
             });
         }
 
-        public static Bitmap MakeNet2BitmapFromWPFBitmapSource(BitmapSource src)
+        public static void DiagnosticsUpdateLeft(Bitmap left)
         {
-             try
-             {
-                 System.IO.MemoryStream TransportStream = new System.IO.MemoryStream();
-                 BitmapEncoder enc = new BmpBitmapEncoder();
-                 enc.Frames.Add(BitmapFrame.Create(src));
-                 enc.Save(TransportStream);
-                 return new Bitmap(TransportStream);
-             }
-             catch { SupportFunctions.outConn("Could not decode image"); return null; }
+            Task.Run(() =>
+            { //decode the binary and display the image in diagnostics
+                try
+                {
+                    Diagnostics.leftPicture.Invoke((MethodInvoker)delegate
+                    {
+                        Diagnostics.leftPicture.Image = left;
+                    });
+                    Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                    {
+                        Diagnostics.decodeError.Visible = false;
+                    });
+                }
+                catch
+                {
+                    //ignore error, form is likely closed
+                }
+            });
+        }
+
+        public static void DiagnosticsUpdateRight(Bitmap right)
+        {
+            Task.Run(() =>
+            { //decode the binary and display the image in diagnostics
+                try
+                {
+                    Diagnostics.rightPicture.Invoke((MethodInvoker)delegate
+                    {
+                        Diagnostics.rightPicture.Image = right;
+                    });
+                    Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                    {
+                        Diagnostics.decodeError.Visible = false;
+                    });
+                }
+                catch
+                {
+                    //ignore error, form is likely closed
+                }
+            });
         }
     }
 }

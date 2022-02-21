@@ -5,13 +5,17 @@ namespace QuestEyes_Server
     public partial class Diagnostics : Form
     {
         public static bool diagnosticsOpen;
-        public static PictureBox pictureBox;
+        public static PictureBox truePicture;
+        public static PictureBox rightPicture;
+        public static PictureBox leftPicture;
         public static Label decodeError;
 
         public Diagnostics()
         {
             InitializeComponent();
-            pictureBox = pictureBox1;
+            truePicture = truepic;
+            rightPicture = rightImage;
+            leftPicture = leftImage;
             decodeError = decodeErrorMessage;
         }
 

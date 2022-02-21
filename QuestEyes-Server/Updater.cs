@@ -1,12 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
-using System.Linq;
 using System.Net;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -17,7 +11,6 @@ namespace QuestEyes_Server
         public static bool updaterOpen;
         private string downloadedInfo;
         private string[] versionInfo;
-        public static string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
 
         public Updater()
         {
@@ -52,11 +45,21 @@ namespace QuestEyes_Server
             //check if an update is available at cdn.stevenwheeler.co.uk
             using (var webClient = new WebClient())
             {
-                SupportFunctions.outConn("Checking for device firmware updates...");
-                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/info");
-                updateProgressBar.Value = 20;
-                char[] delims = new[] { '\r', '\n' };
-                versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+                SupportFunctions.outConn("Connecting to server to check for device firmware updates...");
+                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/info");
+                if(downloadedInfo == null)
+                {
+                    updateProgressBar.Value = 100;
+                    updateStageLabel.Text = "Could not connect to server.";
+                    SupportFunctions.outConn("Could not connect to update server.");
+                    return;
+                }
+                else
+                {
+                    updateProgressBar.Value = 20;
+                    char[] delims = new[] { '\r', '\n' };
+                    versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+                }
             }
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
             int oldversioncheck = int.Parse(Networking.DeviceFirmware.Replace(".", ""));
@@ -100,8 +103,18 @@ namespace QuestEyes_Server
                 {
                     SupportFunctions.outConn("Downloading OTA firmware file...");
                     updateStageLabel.Text = "Downloading update...";
-                    Directory.CreateDirectory(storageFolder);
-                    webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/QE_UPDATE_IMG_latest.bin", storageFolder + "\\QE_UPDATE_IMG_latest.bin");
+                    Directory.CreateDirectory(Main.storageFolder);
+                    try
+                    {
+                        webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/QE_UPDATE_IMG_latest.bin", Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
+                    } 
+                    catch
+                    {
+                         updateProgressBar.Value = 100;
+                         updateStageLabel.Text = "Could not download OTA.";
+                         SupportFunctions.outConn("Could not download OTA from server.");
+                         return;
+                    }
                     SupportFunctions.outConn("File downloaded.");
                     updateProgressBar.Value = 40;
                 }
@@ -154,12 +167,12 @@ namespace QuestEyes_Server
             {
                 updateStageLabel.Text = "Transferring to device...";
             });
-            byte[] filebuffer = File.ReadAllBytes(storageFolder + "\\QE_UPDATE_IMG_latest.bin");
+            byte[] filebuffer = File.ReadAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConn("File length: " + filebuffer.Length);
             Networking.communicationSocket.Send(filebuffer);
             SupportFunctions.outConn("File transferred.");
             //delete the file off the PC as its no longer required
-            File.Delete(storageFolder + "\\QE_UPDATE_IMG_latest.bin");
+            File.Delete(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConn("Cleaned up unnecessary files.");
             //device will take care of the rest and send websocket commands with progress
             SupportFunctions.outConn("Device is installing update...");

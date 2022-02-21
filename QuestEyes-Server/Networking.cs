@@ -1,5 +1,4 @@
-﻿using System;
-using System.Drawing;
+﻿using System.Drawing;
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Net.Sockets;
@@ -7,6 +6,7 @@ using System.Text;
 using System.Windows.Media.Imaging;
 using WebSocketSharp;
 using System.Timers;
+using System.IO;
 
 namespace QuestEyes_Server
 {
@@ -167,11 +167,7 @@ namespace QuestEyes_Server
             }
             else if (e.IsBinary) //Image from system
             {
-                BitmapImage image = CamFeed.Decode(e.RawData);
-                if (Diagnostics.diagnosticsOpen == true)
-                {
-                    SupportFunctions.DiagnosticsUpdate(image);
-                }
+                EyeTrackingFramework.detectEyes(e.RawData);
             }
         }
 
@@ -213,7 +209,7 @@ namespace QuestEyes_Server
             }
         }
 
-        private static void Ws_OnError(object sender, ErrorEventArgs e)
+        private static void Ws_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
         {
             SupportFunctions.outConn("Socket error: " + e);
             SupportFunctions.outConn("Closing connection");

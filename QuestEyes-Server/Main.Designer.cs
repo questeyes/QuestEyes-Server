@@ -38,12 +38,14 @@ namespace QuestEyes_Server
             this.title = new System.Windows.Forms.Label();
             this.consoleBox = new System.Windows.Forms.RichTextBox();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.conStat = new System.Windows.Forms.Label();
             this.conStatLabel = new System.Windows.Forms.Label();
+            this.conStat = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panel3 = new System.Windows.Forms.Panel();
             this.infoButton = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.oscButton = new System.Windows.Forms.Button();
+            this.calibrateButton = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panel3.SuspendLayout();
@@ -73,7 +75,7 @@ namespace QuestEyes_Server
             // 
             this.checkFirmUpdate.Enabled = false;
             this.checkFirmUpdate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.checkFirmUpdate.Location = new System.Drawing.Point(12, 205);
+            this.checkFirmUpdate.Location = new System.Drawing.Point(12, 197);
             this.checkFirmUpdate.Name = "checkFirmUpdate";
             this.checkFirmUpdate.Size = new System.Drawing.Size(177, 23);
             this.checkFirmUpdate.TabIndex = 1;
@@ -85,7 +87,7 @@ namespace QuestEyes_Server
             // 
             this.forceReconnect.Enabled = false;
             this.forceReconnect.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.forceReconnect.Location = new System.Drawing.Point(195, 205);
+            this.forceReconnect.Location = new System.Drawing.Point(195, 197);
             this.forceReconnect.Name = "forceReconnect";
             this.forceReconnect.Size = new System.Drawing.Size(177, 23);
             this.forceReconnect.TabIndex = 2;
@@ -96,7 +98,7 @@ namespace QuestEyes_Server
             // diagnostics
             // 
             this.diagnostics.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.diagnostics.Location = new System.Drawing.Point(195, 232);
+            this.diagnostics.Location = new System.Drawing.Point(195, 224);
             this.diagnostics.Name = "diagnostics";
             this.diagnostics.Size = new System.Drawing.Size(177, 23);
             this.diagnostics.TabIndex = 4;
@@ -108,7 +110,7 @@ namespace QuestEyes_Server
             // 
             this.resetDevice.Enabled = false;
             this.resetDevice.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.resetDevice.Location = new System.Drawing.Point(12, 232);
+            this.resetDevice.Location = new System.Drawing.Point(12, 224);
             this.resetDevice.Name = "resetDevice";
             this.resetDevice.Size = new System.Drawing.Size(177, 23);
             this.resetDevice.TabIndex = 3;
@@ -135,7 +137,7 @@ namespace QuestEyes_Server
             this.consoleBox.DetectUrls = false;
             this.consoleBox.ForeColor = System.Drawing.SystemColors.Window;
             this.consoleBox.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.consoleBox.Location = new System.Drawing.Point(12, 270);
+            this.consoleBox.Location = new System.Drawing.Point(12, 309);
             this.consoleBox.Name = "consoleBox";
             this.consoleBox.ReadOnly = true;
             this.consoleBox.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -155,6 +157,16 @@ namespace QuestEyes_Server
             this.panel1.Size = new System.Drawing.Size(360, 36);
             this.panel1.TabIndex = 18;
             // 
+            // conStatLabel
+            // 
+            this.conStatLabel.AutoSize = true;
+            this.conStatLabel.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.conStatLabel.Location = new System.Drawing.Point(4, 9);
+            this.conStatLabel.Name = "conStatLabel";
+            this.conStatLabel.Size = new System.Drawing.Size(124, 19);
+            this.conStatLabel.TabIndex = 1;
+            this.conStatLabel.Text = "Connection status:";
+            // 
             // conStat
             // 
             this.conStat.AutoSize = true;
@@ -165,16 +177,6 @@ namespace QuestEyes_Server
             this.conStat.Size = new System.Drawing.Size(79, 19);
             this.conStat.TabIndex = 10;
             this.conStat.Text = "Searching...";
-            // 
-            // conStatLabel
-            // 
-            this.conStatLabel.AutoSize = true;
-            this.conStatLabel.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.conStatLabel.Location = new System.Drawing.Point(4, 9);
-            this.conStatLabel.Name = "conStatLabel";
-            this.conStatLabel.Size = new System.Drawing.Size(124, 19);
-            this.conStatLabel.TabIndex = 1;
-            this.conStatLabel.Text = "Connection status:";
             // 
             // panel2
             // 
@@ -198,7 +200,7 @@ namespace QuestEyes_Server
             // 
             this.infoButton.BackgroundImage = global::QuestEyes_Server.Properties.Resources.information;
             this.infoButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.infoButton.Location = new System.Drawing.Point(347, 346);
+            this.infoButton.Location = new System.Drawing.Point(347, 385);
             this.infoButton.Name = "infoButton";
             this.infoButton.Size = new System.Drawing.Size(25, 25);
             this.infoButton.TabIndex = 5;
@@ -210,18 +212,42 @@ namespace QuestEyes_Server
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft YaHei", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label1.ForeColor = System.Drawing.SystemColors.Control;
-            this.label1.Location = new System.Drawing.Point(9, 350);
+            this.label1.Location = new System.Drawing.Point(9, 389);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(172, 16);
             this.label1.TabIndex = 4;
             this.label1.Text = "QuestEyes PC App version 1.1.0";
+            // 
+            // oscButton
+            // 
+            this.oscButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.oscButton.Location = new System.Drawing.Point(12, 251);
+            this.oscButton.Name = "oscButton";
+            this.oscButton.Size = new System.Drawing.Size(360, 23);
+            this.oscButton.TabIndex = 20;
+            this.oscButton.Text = "OSC output control (Output to VRChat, etc)";
+            this.oscButton.UseVisualStyleBackColor = true;
+            this.oscButton.Click += new System.EventHandler(this.oscButton_Click);
+            // 
+            // calibrateButton
+            // 
+            this.calibrateButton.Enabled = false;
+            this.calibrateButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
+            this.calibrateButton.Location = new System.Drawing.Point(12, 278);
+            this.calibrateButton.Name = "calibrateButton";
+            this.calibrateButton.Size = new System.Drawing.Size(360, 23);
+            this.calibrateButton.TabIndex = 21;
+            this.calibrateButton.Text = "Begin device calibration";
+            this.calibrateButton.UseVisualStyleBackColor = true;
             // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(65)))), ((int)(((byte)(217)))));
-            this.ClientSize = new System.Drawing.Size(384, 377);
+            this.ClientSize = new System.Drawing.Size(384, 416);
+            this.Controls.Add(this.calibrateButton);
+            this.Controls.Add(this.oscButton);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel3);
@@ -265,6 +291,8 @@ namespace QuestEyes_Server
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panel3;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button oscButton;
+        private System.Windows.Forms.Button calibrateButton;
     }
 }
 

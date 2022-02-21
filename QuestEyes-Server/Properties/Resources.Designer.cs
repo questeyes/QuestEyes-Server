@@ -61,12 +61,45 @@ namespace QuestEyes_Server.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to &lt;?xml version=&quot;1.0&quot;?&gt;
+        ///&lt;!--
+        ///    Stump-based 20x20 frontal eye detector.
+        ///    Created by Shameem Hameed (http://umich.edu/~shameem)
+        ///
+        ///////////////////////////////////////////////////////////////////////////////////////////
+        ///
+        ///  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
+        ///
+        ///  By downloading, copying, installing or using the software you agree to this license.
+        ///  If you do not agree to this license, do not download, install,
+        ///  copy or use the software.
+        ///
+        ///
+        ///                        Int [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string haarcascade_eye {
+            get {
+                return ResourceManager.GetString("haarcascade_eye", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap information {
             get {
                 object obj = ResourceManager.GetObject("information", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to VRC:9000:0
+        ///Custom:0:0.
+        /// </summary>
+        internal static string OSCConfInternal {
+            get {
+                return ResourceManager.GetString("OSCConfInternal", resourceCulture);
             }
         }
     }

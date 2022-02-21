@@ -6,6 +6,8 @@ namespace QuestEyes_Server
 { 
     public partial class Main : Form
     {
+        public static string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
+
         public static Diagnostics diagnosticsWindow;
         public static Label connectionStatus;
         public static Label batteryStatus;
@@ -27,6 +29,9 @@ namespace QuestEyes_Server
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            OSCCommunicationFramework.generateSettingsStorage();
+            OSCCommunicationFramework.readSettings();
+            EyeTrackingFramework.loadEyeClassifierData();
             Activated += AfterLoading;
         }
 
@@ -78,6 +83,15 @@ namespace QuestEyes_Server
         private void resetDevice_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void oscButton_Click(object sender, EventArgs e)
+        {
+            if (OSCControl.oscOpen == false)
+            {
+                OSCControl osccontrol = new OSCControl();
+                osccontrol.Show();
+            }
         }
     }
 }
