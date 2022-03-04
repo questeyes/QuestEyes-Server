@@ -3,14 +3,13 @@ using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Text;
-using System.Windows.Media.Imaging;
 using WebSocketSharp;
 using System.Timers;
-using System.IO;
+using System;
 
 namespace QuestEyes_Server
 {
-    class Networking
+    class InterdeviceNetworkingFramework
     {
         /** 
          * PORTS:
@@ -156,7 +155,6 @@ namespace QuestEyes_Server
                         Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
                         Main.connectionStatus.Text = "Connected in OTA mode";
                     });
-                    //ota logic here
                     DeviceMode = "OTA";
                 }
                 else
@@ -167,7 +165,7 @@ namespace QuestEyes_Server
             }
             else if (e.IsBinary) //Image from system
             {
-                EyeTrackingFramework.detectEyes(e.RawData);
+                (int right_X, int right_Y, int left_X, int left_Y) = EyeTrackingFramework.detectEyes(e.RawData);
             }
         }
 
@@ -200,11 +198,11 @@ namespace QuestEyes_Server
             attemptingConnect = false;
 
 
-            if (Diagnostics.diagnosticsOpen == true)
+            if (DiagnosticsPanel.diagnosticsOpen == true)
             {
-                Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
                 {
-                    Diagnostics.decodeError.Visible = true;
+                    DiagnosticsPanel.decodeError.Visible = true;
                 });
             }
         }

@@ -1,21 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
-    public partial class OSCControl : Form
+    public partial class OSCControlPanel : Form
     {
 
         public static bool oscOpen;
 
-        public OSCControl()
+        public OSCControlPanel()
         {
             InitializeComponent();
         }
@@ -24,7 +18,7 @@ namespace QuestEyes_Server
         {
             oscOpen = true;
             //check the saved states of the OSC control
-            foreach (var setting in OSCCommunicationFramework.OSCSettings.ToList())
+            foreach (var setting in OSC_SoftwareControlSystem.OSCSettings.ToList())
             {
                 if (setting.Name == "VRC")
                 {
@@ -56,15 +50,16 @@ namespace QuestEyes_Server
         {
             if (vrcCheckBox.Checked == false) //if unchecked
             {
-                int index = OSCCommunicationFramework.OSCSettings.FindIndex(setting => setting.Name == "VRC");
-                OSCCommunicationFramework.OSCSettings[index] = new OSCCommunicationFramework.OSCSetting { Name = OSCCommunicationFramework.OSCSettings[index].Name, Port = OSCCommunicationFramework.OSCSettings[index].Port, State = "0" };
-                OSCCommunicationFramework.storeSettings();
+                int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "VRC");
+                OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "0" };
+                OSC_SoftwareControlSystem.storeSettings();
             }
             else if (vrcCheckBox.Checked == true) //if checked
             {
-                int index = OSCCommunicationFramework.OSCSettings.FindIndex(setting => setting.Name == "VRC");
-                OSCCommunicationFramework.OSCSettings[index] = new OSCCommunicationFramework.OSCSetting { Name = OSCCommunicationFramework.OSCSettings[index].Name, Port = OSCCommunicationFramework.OSCSettings[index].Port, State = "1" };
-                OSCCommunicationFramework.storeSettings();
+                int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "VRC");
+                OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "1" };
+                OSC_SoftwareControlSystem.storeSettings();
+                VRCHAT_OSC.InitVRCConnection();
             }
         }
 
@@ -80,9 +75,9 @@ namespace QuestEyes_Server
         {
             if (customCheckBox.Checked == false)
             {
-                int index = OSCCommunicationFramework.OSCSettings.FindIndex(setting => setting.Name == "Custom");
-                OSCCommunicationFramework.OSCSettings[index] = new OSCCommunicationFramework.OSCSetting { Name = OSCCommunicationFramework.OSCSettings[index].Name, Port = OSCCommunicationFramework.OSCSettings[index].Port, State = "0" };
-                OSCCommunicationFramework.storeSettings();
+                int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "Custom");
+                OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "0" };
+                OSC_SoftwareControlSystem.storeSettings();
             }
             if (customCheckBox.Checked == true) {
                 if (customPortBox.Text.Length == 0)
@@ -92,9 +87,10 @@ namespace QuestEyes_Server
                 }
                 else
                 {
-                    int index = OSCCommunicationFramework.OSCSettings.FindIndex(setting => setting.Name == "Custom");
-                    OSCCommunicationFramework.OSCSettings[index] = new OSCCommunicationFramework.OSCSetting { Name = OSCCommunicationFramework.OSCSettings[index].Name, Port = customPortBox.Text, State = "1" };
-                    OSCCommunicationFramework.storeSettings();
+                    int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "Custom");
+                    OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = customPortBox.Text, State = "1" };
+                    OSC_SoftwareControlSystem.storeSettings();
+                    CUSTOM_OSC.InitCustomConnection(int.Parse(customPortBox.Text));
                 }
             }
         }
@@ -103,9 +99,9 @@ namespace QuestEyes_Server
         {
             if (customCheckBox.Checked == true)
             {
-                int index = OSCCommunicationFramework.OSCSettings.FindIndex(setting => setting.Name == "Custom");
-                OSCCommunicationFramework.OSCSettings[index] = new OSCCommunicationFramework.OSCSetting { Name = OSCCommunicationFramework.OSCSettings[index].Name, Port = customPortBox.Text, State = "1" };
-                OSCCommunicationFramework.storeSettings();
+                int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "Custom");
+                OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = customPortBox.Text, State = "1" };
+                OSC_SoftwareControlSystem.storeSettings();
             }
         }
     }

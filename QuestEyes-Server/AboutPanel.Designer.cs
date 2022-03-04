@@ -1,7 +1,7 @@
 ﻿
 namespace QuestEyes_Server
 {
-    partial class About
+    partial class AboutPanel
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace QuestEyes_Server
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(About));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutPanel));
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
             // 
@@ -44,7 +44,7 @@ namespace QuestEyes_Server
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
             // 
-            // About
+            // AboutPanel
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -53,7 +53,7 @@ namespace QuestEyes_Server
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-            this.Name = "About";
+            this.Name = "AboutPanel";
             this.Text = "QuestEyes About";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.About_FormClosing);

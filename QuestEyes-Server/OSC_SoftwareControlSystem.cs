@@ -4,7 +4,7 @@ using System.IO;
 
 namespace QuestEyes_Server
 {
-    class OSCCommunicationFramework
+    class OSC_SoftwareControlSystem
     {
         public class OSCSetting
         {

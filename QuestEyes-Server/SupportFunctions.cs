@@ -28,13 +28,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    Diagnostics.truePicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.truePicture.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.truePicture.Image = truePic;
+                        DiagnosticsPanel.truePicture.Image = truePic;
                     });
-                    Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.decodeError.Visible = false;
+                        DiagnosticsPanel.decodeError.Visible = false;
                     });
                 }
                 catch
@@ -50,13 +50,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    Diagnostics.leftPicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.leftPicture.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.leftPicture.Image = left;
+                        DiagnosticsPanel.leftPicture.Image = left;
                     });
-                    Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.decodeError.Visible = false;
+                        DiagnosticsPanel.decodeError.Visible = false;
                     });
                 }
                 catch
@@ -72,13 +72,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    Diagnostics.rightPicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.rightPicture.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.rightPicture.Image = right;
+                        DiagnosticsPanel.rightPicture.Image = right;
                     });
-                    Diagnostics.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
                     {
-                        Diagnostics.decodeError.Visible = false;
+                        DiagnosticsPanel.decodeError.Visible = false;
                     });
                 }
                 catch

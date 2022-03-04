@@ -1,15 +1,7 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Net;
-using System.Numerics;
-using System.Runtime.InteropServices;
 using OpenCvSharp;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace QuestEyes_Server
 {
@@ -26,35 +18,40 @@ namespace QuestEyes_Server
             eyeClassifier = new CascadeClassifier(Main.storageFolder + "\\haarcascade_eye.xml");
         }
 
-        public static void detectEyes(byte[] data)
+        public static Tuple<int, int, int, int> detectEyes(byte[] data)
         {
+            //declare the positional variables for sending later
+            int right_X = 0, right_Y = 0;
+            int left_X = 0, left_Y = 0;
+
+            //turn the byte stream into a bitmap image
             MemoryStream stream = new MemoryStream(data);
             Bitmap bitmap = new Bitmap(stream);
 
-            var source = new Mat();
-            source = OpenCvSharp.Extensions.BitmapConverter.ToMat(bitmap);
+            //create the main material
+            var main = new Mat();
+            main = OpenCvSharp.Extensions.BitmapConverter.ToMat(bitmap);
 
-            var modified = new Mat();
-
+            //create the left and right material
             var left = new Mat();
-            var leftmodified = new Mat();
             var right = new Mat();
-            var rightmodified = new Mat();
 
-            //turn the image grey
-            Cv2.CvtColor(source, modified, ColorConversionCodes.BGR2GRAY);
-            source.Release();
-            source.Dispose();
+            //turn the main image grey
+            Cv2.CvtColor(main, main, ColorConversionCodes.BGR2GRAY);
 
-            //erode and create the blur
-            //Cv2.Erode(modified, modified, 1);
-            //Cv2.MedianBlur(modified, modified, 25);
-            //Cv2.Threshold(modified, modified, 100, 255, ThresholdTypes.BinaryInv);
+            //apply modifiers
+            try
+            {
+                Cv2.EqualizeHist(main, main);
+                //Cv2.Erode(main, main, 1);
+                Cv2.MedianBlur(main, main, DiagnosticsPanel.blur);
+            }
+            catch { }
 
-            //detect the eyes
-            Rect[] eyes = eyeClassifier.DetectMultiScale(modified, 1.3, 2, HaarDetectionTypes.ScaleImage, new OpenCvSharp.Size(30, 50));
+            //detect the eyes in main
+            Rect[] eyes = eyeClassifier.DetectMultiScale(main, 1.3, 2, HaarDetectionTypes.DoCannyPruning, new OpenCvSharp.Size(30, 50));
    
-            //find each eyes coords
+            //find each eye
             foreach (Rect eye in eyes)
             {
                 var center = new OpenCvSharp.Point
@@ -67,101 +64,127 @@ namespace QuestEyes_Server
                     Width = (int)(eye.Width * 0.5),
                     Height = (int)(eye.Height * 0.5)
                 };
-                Cv2.Rectangle(modified, eye, new Scalar(255, 0, 255), thickness: 2);
-                if (center.X < 365) //Left side
+                Cv2.Rectangle(main, eye, new Scalar(255, 0, 255), thickness: 2);
+                if (center.X < 365) //left side
                 {
-                    left = new Mat(modified, eye);
-                    Cv2.Threshold(left, leftmodified, 100, 255, ThresholdTypes.Binary);
-                    left.Release();
-                    left.Dispose();
-                    if (Diagnostics.diagnosticsOpen == true)
+                    //create left eye material
+                    left = new Mat(main, eye);
+
+                    //apply modifiers
+                    Cv2.Threshold(left, left, 100, 255, ThresholdTypes.BinaryInv);
+
+                    //determine the iris position
+                    /**double largest_area = 0;
+                    int largest_contour_index = 0;
+
+                    OpenCvSharp.Point[][] leftContours;
+                    OpenCvSharp.HierarchyIndex[] leftHierarchy;
+
+                    Cv2.FindContours(left, out leftContours, out leftHierarchy, RetrievalModes.Tree, ContourApproximationModes.ApproxSimple);
+
+                    for (int i = 0; i < leftContours.Length; i++)
                     {
-                        Bitmap left_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(leftmodified);
+                        double a = Cv2.ContourArea(leftContours[i], false);
+                        if (a > largest_area)
+                        {
+                            largest_area = a;
+                            largest_contour_index = i;
+                        }
+                    }
+
+                    try
+                    {
+                        OpenCvSharp.Rect bounding_rect = Cv2.BoundingRect(leftContours[largest_contour_index]);
+                        right = right[bounding_rect];
+                    }
+                    catch { }
+
+                    double cannyThreshold = DiagnosticsPanel.cannyThreshold;
+                    double circleAccumulatorThreshold = DiagnosticsPanel.circleAccThreshold;
+                    int minRadius = DiagnosticsPanel.minRad;
+                    int maxRadius = DiagnosticsPanel.maxRad;
+                    CircleSegment[] circles = Cv2.HoughCircles(left, HoughModes.Gradient, 2.0, 20.0, cannyThreshold, circleAccumulatorThreshold, minRadius, maxRadius);
+
+                    foreach (CircleSegment circle in circles)
+                        Cv2.Circle(left, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
+
+                    if (DiagnosticsPanel.diagnosticsOpen == true)
+                    {
+                        //convert to bitmap and send to diagnostics panel
+                        Bitmap left_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(left);
                         SupportFunctions.DiagnosticsUpdateLeft(left_bitmap);
                     }
                 }
-                else //Right side
+                else //right side
                 {
-                    right = new Mat(modified, eye);
-                    Cv2.Threshold(right, rightmodified, 100, 255, ThresholdTypes.Binary);
-                    right.Release();
-                    right.Dispose();
-                    if (Diagnostics.diagnosticsOpen == true)
+                    //create right eye material
+                    right = new Mat(main, eye);
+
+                    //apply modifiers
+                    Cv2.Threshold(right, right, 100, 255, ThresholdTypes.BinaryInv);
+
+                    //determine the iris position
+                    /**double largest_area = 0;
+                    int largest_contour_index = 0;
+                    
+                    OpenCvSharp.Point[][] rightContours;
+                    OpenCvSharp.HierarchyIndex[] rightHierarchy;
+
+                    Cv2.FindContours(right, out rightContours, out rightHierarchy, RetrievalModes.Tree, ContourApproximationModes.ApproxSimple);
+
+                    for (int i = 0; i < rightContours.Length; i++)
                     {
-                        Bitmap right_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(rightmodified);
+                        double a = Cv2.ContourArea(rightContours[i], false);
+                        if (a > largest_area)
+                        {
+                            largest_area = a;
+                            largest_contour_index = i;
+                        }
+                    }
+
+                    try
+                    {
+                        OpenCvSharp.Rect bounding_rect = Cv2.BoundingRect(rightContours[largest_contour_index]);
+                        right = right[bounding_rect];
+                    }
+                    catch { }
+
+                    double cannyThreshold = DiagnosticsPanel.cannyThreshold;
+                    double circleAccumulatorThreshold = DiagnosticsPanel.circleAccThreshold;
+                    int minRadius = DiagnosticsPanel.minRad;
+                    int maxRadius = DiagnosticsPanel.maxRad;
+                    CircleSegment[] circles = Cv2.HoughCircles(right, HoughModes.Gradient, 2.0, 20.0, cannyThreshold, circleAccumulatorThreshold, minRadius, maxRadius);
+
+                    foreach (CircleSegment circle in circles)
+                        Cv2.Circle(right, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
+
+
+                    if (DiagnosticsPanel.diagnosticsOpen == true)
+                    {
+                        //convert to bitmap and send to diagnostics panel
+                        Bitmap right_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(right);
                         SupportFunctions.DiagnosticsUpdateRight(right_bitmap);
                     }
                 }
             }
 
-            //determine the irises
-
-
-
-
-
-
-
-
-
-
-
-
-            /**MSER mser = MSER.Create();
-
-            OpenCvSharp.Point[][] contours;
-            Rect[] bboxes;
-
-            mser.DetectRegions(modified, out contours, out bboxes);
-
-            
-
-            for (int i = 0; i < contours.Length; i++)
+            if (DiagnosticsPanel.diagnosticsOpen == true)
             {
-                Cv2.Rectangle(modified, bboxes[i], new Scalar(255, 0, 255));
-            }
-
-
-            /**foreach (OpenCvSharp.Point[] pts in contours)
-            {
-                Scalar color = Scalar.RandomColor();
-                foreach (OpenCvSharp.Point p in pts)
-                {
-                    modified.Circle(p, 1, color);
-                }
-            }**/
-
-
-
-
-            if (Diagnostics.diagnosticsOpen == true)
-            {
-                Bitmap result_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(modified);
-                modified.Release();
-                modified.Dispose();
+                //convert to bitmap and send to diagnostics panel
+                Bitmap result_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(main);
                 SupportFunctions.DiagnosticsUpdateTrue(result_bitmap);
             }
 
-            /**OpenCvSharp.Point[][] contours;
-            HierarchyIndex[] hierachy;
-            Cv2.FindContours(gray, out contours, out hierachy, RetrievalModes.List, ContourApproximationModes.ApproxSimple);
+            //release and dispose of all the materials we don't need anymore
+            main.Release();
+            main.Dispose();
+            left.Release();
+            left.Dispose();
+            right.Release();
+            right.Dispose();
 
-            for (int i = 0; i < contours.Length; i++)
-            {
-                // Fitting function must have at least five points, less than or without fitting
-                if (contours[i].Length < 5) continue;
-                // Elliptic fitting
-                var rrt = Cv2.FitEllipse(contours[i]);
-
-                // ROI recovery
-                rrt.Center.X += eye.X;
-                rrt.Center.Y += eye.Y;
-
-                // Draw an ellipse
-                Cv2.Ellipse(result, rrt, new Scalar(0, 0, 255), 2, LineTypes.AntiAlias);
-                // Draw the center of a circle
-                Cv2.Circle(result, (int)(rrt.Center.X), (int)(rrt.Center.Y), 4, new Scalar(255, 0, 0), -1, LineTypes.Link8, 0);
-            }**/
+            //return the positions
+            return Tuple.Create(right_X, right_Y, left_X, left_Y);
         }
     }
 }

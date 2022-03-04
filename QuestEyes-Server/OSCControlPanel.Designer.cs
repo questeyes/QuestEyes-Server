@@ -1,7 +1,7 @@
 ﻿
 namespace QuestEyes_Server
 {
-    partial class OSCControl
+    partial class OSCControlPanel
     {
         /// <summary>
         /// Required designer variable.
@@ -29,7 +29,7 @@ namespace QuestEyes_Server
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OSCControl));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(OSCControlPanel));
             this.oscDescription = new System.Windows.Forms.Label();
             this.vrcCheckBox = new System.Windows.Forms.CheckBox();
             this.panel1 = new System.Windows.Forms.Panel();

@@ -10,11 +10,11 @@ using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
-    public partial class About : Form
+    public partial class AboutPanel : Form
     {
         public static bool aboutOpen;
 
-        public About()
+        public AboutPanel()
         {
             InitializeComponent();
         }

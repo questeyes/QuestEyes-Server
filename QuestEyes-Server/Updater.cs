@@ -9,12 +9,16 @@ namespace QuestEyes_Server
     public partial class Updater : Form
     {
         public static bool updaterOpen;
-        private string downloadedInfo;
-        private string[] versionInfo;
+        public static ProgressBar progressBar;
+        public static Label statusLabel;
+        public static Button closeButton;
 
         public Updater()
         {
             InitializeComponent();
+            progressBar = updateProgressBar;
+            statusLabel = updateStageLabel;
+            closeButton = updateClose;
         }
 
         private void Updater_Load(object sender, EventArgs e)
@@ -40,59 +44,77 @@ namespace QuestEyes_Server
             });
         }
 
-        private void Updater_Shown(object sender, EventArgs e)
+        private async void Updater_Shown(object sender, EventArgs e)
         {
-            //check if an update is available at cdn.stevenwheeler.co.uk
+            SupportFunctions.outConn("Connecting to server to check for updates...");
+            //check if updates are available at cdn.stevenwheeler.co.uk
             using (var webClient = new WebClient())
             {
-                SupportFunctions.outConn("Connecting to server to check for device firmware updates...");
-                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/info");
-                if(downloadedInfo == null)
-                {
-                    updateProgressBar.Value = 100;
-                    updateStageLabel.Text = "Could not connect to server.";
-                    SupportFunctions.outConn("Could not connect to update server.");
-                    return;
+                //check for FIRMWARE UPDATE (/QuestEyes/Firmware)
+                (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = FirmwareUpdater.checkForUpdate(webClient);
+                if (firmwareUpdateAvailable == true) {
+                    await FirmwareUpdater.beginUpdateProceedure(firmwareVersion, firmwareChanges);
                 }
-                else
+
+                //check for SOFTWARE UPDATE (/QuestEyes/Software)
+                (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = SoftwareUpdater.checkForUpdate(webClient);
+                if (softwareUpdateAvailable == true)
                 {
-                    updateProgressBar.Value = 20;
-                    char[] delims = new[] { '\r', '\n' };
-                    versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+                    SoftwareUpdater.beginUpdateProceedure(softwareVersion, softwareChanges);
                 }
             }
+        }
+    }
+
+    public class FirmwareUpdater
+    {
+        private static string downloadedInfo;
+        private static string[] versionInfo;
+
+        public static Tuple<bool, string, string> checkForUpdate(WebClient webClient)
+        {
+            try
+            {
+                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/info");
+            }
+            catch
+            {
+               Updater.progressBar.Value = 50;
+               Updater.statusLabel.Text = "Could not connect to server.";
+               SupportFunctions.outConn("Could not connect to update server to check for firmware update.");
+               return Tuple.Create(false, "null", "null");
+            }
+
+            Updater.progressBar.Value = 10;
+            char[] delims = new[] { '\r', '\n' };
+            versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
-            int oldversioncheck = int.Parse(Networking.DeviceFirmware.Replace(".", ""));
+            int oldversioncheck = int.Parse(InterdeviceNetworkingFramework.DeviceFirmware.Replace(".", ""));
 
             if (newversioncheck > oldversioncheck)
             {
                 SupportFunctions.outConn("Update available: " + versionInfo[0]);
-                _ = promptUserToUpdateAsync(versionInfo[0], versionInfo[1]);
+                return Tuple.Create(true, versionInfo[0], versionInfo[1]);
             }
             else
             {
-                updateProgressBar.Value = 100;
-                updateStageLabel.Text = "Device is up to date.";
+                Updater.progressBar.Value = 50;
+                Updater.statusLabel.Text = "Device is up to date.";
                 SupportFunctions.outConn("No new firmware updates are available.");
+                return Tuple.Create(false, "null", "null");
             }
-            
         }
 
-        async Task delayOTAModeCheck()
-        {
-            await Task.Delay(1000);
-        }
-
-        private async Task promptUserToUpdateAsync(string newVersion, string changelog)
+        public static async Task beginUpdateProceedure(string newVersion, string changelog)
         {
             DialogResult updatePrompt = MessageBox.Show(
-                "Update " + Networking.DeviceName + " from " + Networking.DeviceFirmware + " to " + newVersion + "?\n\n" + newVersion + " changelog: \n" + changelog, 
-                "Update available", MessageBoxButtons.YesNo);
+                "Update " + InterdeviceNetworkingFramework.DeviceName + " from " + InterdeviceNetworkingFramework.DeviceFirmware + " to " + newVersion + "?\n\n" + newVersion + " changelog: \n" + changelog,
+                "Firmware update available", MessageBoxButtons.YesNo);
             if (updatePrompt == DialogResult.Yes)
             {
                 SupportFunctions.outConn("Update accepted by user.");
                 //put device in OTA mode
-                updateStageLabel.Text = "Preparing device...";
+                Updater.statusLabel.Text = "Preparing device...";
                 putDeviceInOTAMode();
 
                 //wait here and confirm in ota mode
@@ -102,29 +124,37 @@ namespace QuestEyes_Server
                 using (var webClient = new WebClient())
                 {
                     SupportFunctions.outConn("Downloading OTA firmware file...");
-                    updateStageLabel.Text = "Downloading update...";
+                    Updater.statusLabel.Text = "Downloading update...";
                     Directory.CreateDirectory(Main.storageFolder);
                     try
                     {
                         webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/QE_UPDATE_IMG_latest.bin", Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
-                    } 
+                    }
                     catch
                     {
-                         updateProgressBar.Value = 100;
-                         updateStageLabel.Text = "Could not download OTA.";
-                         SupportFunctions.outConn("Could not download OTA from server.");
-                         return;
+                        Updater.progressBar.Value = 50;
+                        Updater.statusLabel.Text = "Could not download OTA.";
+                        SupportFunctions.outConn("Could not download OTA from server.");
+                        return;
                     }
                     SupportFunctions.outConn("File downloaded.");
-                    updateProgressBar.Value = 40;
+                    Updater.progressBar.Value = 20;
                 }
                 SupportFunctions.outConn("Verifying downloaded file...");
-                updateStageLabel.Text = "Verifying downloaded update file...";
+                Updater.statusLabel.Text = "Verifying downloaded update file...";
                 //verify the file here
 
-                updateProgressBar.Value = 60;
 
-                if (Networking.DeviceMode == "OTA")
+
+                //TODO: VERIFY
+
+
+
+
+
+                Updater.progressBar.Value = 30;
+
+                if (InterdeviceNetworkingFramework.DeviceMode == "OTA")
                 {
                     //process the update on the ESP
                     await Task.Run(() =>
@@ -138,49 +168,151 @@ namespace QuestEyes_Server
                     DialogResult otaModeError = MessageBox.Show(
                     "Could not put device in OTA mode.\nPlease reboot device and try again.",
                     "OTA Mode error", MessageBoxButtons.OK);
-                    updateProgressBar.Value = 100;
-                    updateStageLabel.Text = "Update cancelled";
-                    updateClose.Enabled = true;
+                    Updater.progressBar.Value = 50;
+                    Updater.statusLabel.Text = "Update cancelled";
+                    Updater.closeButton.Enabled = true;
                 }
             }
             else if (updatePrompt == DialogResult.No)
             {
                 SupportFunctions.outConn("Update was rejected by user.");
-                updateProgressBar.Value = 100;
-                updateStageLabel.Text = "Update cancelled";
+                Updater.progressBar.Value = 50;
+                Updater.statusLabel.Text = "Update cancelled";
                 return;
             }
         }
 
-        private void putDeviceInOTAMode()
+        async static Task delayOTAModeCheck()
         {
-            updateClose.Enabled = false;
-            SupportFunctions.outConn("Beginning OTA update of connected device...");
-            SupportFunctions.outConn("Putting device into OTA mode...");
-            Networking.communicationSocket.Send("OTA_MODE");
+            await Task.Delay(1000);
         }
 
-        private void performRemoteUpdate()
+        private static void putDeviceInOTAMode()
+        {
+            Updater.closeButton.Enabled = false;
+            SupportFunctions.outConn("Beginning OTA update of connected device...");
+            SupportFunctions.outConn("Putting device into OTA mode...");
+            InterdeviceNetworkingFramework.communicationSocket.Send("OTA_MODE");
+        }
+
+        private static void performRemoteUpdate()
         {
             SupportFunctions.outConn("Transferring OTA file to device...");
-            updateStageLabel.Invoke((MethodInvoker)delegate
+            Updater.statusLabel.Invoke((MethodInvoker)delegate
             {
-                updateStageLabel.Text = "Transferring to device...";
+                Updater.statusLabel.Text = "Transferring to device...";
             });
             byte[] filebuffer = File.ReadAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConn("File length: " + filebuffer.Length);
-            Networking.communicationSocket.Send(filebuffer);
+            InterdeviceNetworkingFramework.communicationSocket.Send(filebuffer);
             SupportFunctions.outConn("File transferred.");
             //delete the file off the PC as its no longer required
             File.Delete(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConn("Cleaned up unnecessary files.");
             //device will take care of the rest and send websocket commands with progress
             SupportFunctions.outConn("Device is installing update...");
-            updateStageLabel.Invoke((MethodInvoker)delegate
+            Updater.statusLabel.Invoke((MethodInvoker)delegate
             {
-                updateProgressBar.Value = 80;
-                updateStageLabel.Text = "Installing...";
+                Updater.progressBar.Value = 40;
+                Updater.statusLabel.Text = "Installing...";
             });
+
+
+            //TODO: PROGRESS INFO
+
+        }
+    }
+
+    public class SoftwareUpdater
+    {
+        private static string downloadedInfo;
+        private static string[] versionInfo;
+
+        public static Tuple<bool, string, string> checkForUpdate(WebClient webClient)
+        {
+            Updater.statusLabel.Text = "Checking for software updates...";
+            try
+            {
+                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/info");
+            } catch
+            {
+                Updater.progressBar.Value = 50;
+                Updater.statusLabel.Text = "Could not connect to update server.";
+                SupportFunctions.outConn("Could not connect to update server to check for software.");
+                return Tuple.Create(false, "null", "null");
+            }
+
+            Updater.progressBar.Value = 60;
+            char[] delims = new[] { '\r', '\n' };
+            versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
+            int oldversioncheck = int.Parse(InterdeviceNetworkingFramework.DeviceFirmware.Replace(".", ""));
+
+            if (newversioncheck > oldversioncheck)
+            {
+                SupportFunctions.outConn("Update available: " + versionInfo[0]);
+                return Tuple.Create(true, versionInfo[0], versionInfo[1]);
+            }
+            else
+            {
+                Updater.progressBar.Value = 100;
+                Updater.statusLabel.Text = "Device is up to date.";
+                SupportFunctions.outConn("No new firmware updates are available.");
+                return Tuple.Create(false, "null", "null");
+            }
+        }
+
+        public static void beginUpdateProceedure(string newVersion, string changelog)
+        {
+            DialogResult updatePrompt = MessageBox.Show(
+                "Update software to version "+ newVersion + "?\n\n" + newVersion + " changelog: \n" + changelog,
+                "Software update available", MessageBoxButtons.YesNo);
+            if (updatePrompt == DialogResult.Yes)
+            {
+                SupportFunctions.outConn("Update accepted by user.");
+
+                //download it and verify it as official and not corrupt
+                using (var webClient = new WebClient())
+                {
+                    SupportFunctions.outConn("Downloading software update file...");
+                    Updater.statusLabel.Text = "Downloading update...";
+                    Directory.CreateDirectory(Main.storageFolder);
+                    try
+                    {
+                        webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/QE_SOFT_UPDATE_latest.exe", Main.storageFolder + "\\QE_SOFT_UPDATE_latest.exe");
+                    }
+                    catch
+                    {
+                        Updater.progressBar.Value = 100;
+                        Updater.statusLabel.Text = "Could not download OTA.";
+                        SupportFunctions.outConn("Could not download OTA from server.");
+                        return;
+                    }
+                    SupportFunctions.outConn("File downloaded.");
+                    Updater.progressBar.Value = 70;
+                }
+                SupportFunctions.outConn("Verifying downloaded file...");
+                Updater.statusLabel.Text = "Verifying downloaded update file...";
+                //verify the file here
+
+
+
+                //TODO: VERIFY
+
+
+                Updater.progressBar.Value = 80;
+
+
+                //TODO: UPDATE SOFTWARE HERE
+
+            }
+            else if (updatePrompt == DialogResult.No)
+            {
+                SupportFunctions.outConn("Update was rejected by user.");
+                Updater.progressBar.Value = 100;
+                Updater.statusLabel.Text = "Update cancelled";
+                return;
+            }
         }
     }
 }

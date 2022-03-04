@@ -8,7 +8,7 @@ namespace QuestEyes_Server
     {
         public static string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
 
-        public static Diagnostics diagnosticsWindow;
+        public static DiagnosticsPanel diagnosticsWindow;
         public static Label connectionStatus;
         public static Label batteryStatus;
         public static Label firmwareVersion;
@@ -29,8 +29,9 @@ namespace QuestEyes_Server
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            OSCCommunicationFramework.generateSettingsStorage();
-            OSCCommunicationFramework.readSettings();
+            OSC_SoftwareControlSystem.generateSettingsStorage();
+            OSC_SoftwareControlSystem.readSettings();
+            OSC_CommunicationFramework.UponOpenInitialize();
             EyeTrackingFramework.loadEyeClassifierData();
             Activated += AfterLoading;
         }
@@ -40,24 +41,24 @@ namespace QuestEyes_Server
             Activated -= AfterLoading;
             Task.Run(() =>
             {
-                Networking.Search();
+                InterdeviceNetworkingFramework.Search();
             });
         }
 
         private void diagnostics_Click(object sender, EventArgs e)
         {
-            if (Diagnostics.diagnosticsOpen == false)
+            if (DiagnosticsPanel.diagnosticsOpen == false)
             {
-                Diagnostics diagnosticsWindow = new Diagnostics();
+                DiagnosticsPanel diagnosticsWindow = new DiagnosticsPanel();
                 diagnosticsWindow.Show();
             }
         }
 
         private void infoButton_Click(object sender, EventArgs e)
         {
-            if (About.aboutOpen == false)
+            if (AboutPanel.aboutOpen == false)
             {
-                About aboutWindow = new About();
+                AboutPanel aboutWindow = new AboutPanel();
                 aboutWindow.Show();
             }
         }
@@ -67,7 +68,7 @@ namespace QuestEyes_Server
             SupportFunctions.outConn("Forcing reconnect per user request...");
             Task.Run(() =>
             {
-                Networking.communicationSocket.Close();
+                InterdeviceNetworkingFramework.communicationSocket.Close();
             });
         }
 
@@ -87,11 +88,16 @@ namespace QuestEyes_Server
 
         private void oscButton_Click(object sender, EventArgs e)
         {
-            if (OSCControl.oscOpen == false)
+            if (OSCControlPanel.oscOpen == false)
             {
-                OSCControl osccontrol = new OSCControl();
+                OSCControlPanel osccontrol = new OSCControlPanel();
                 osccontrol.Show();
             }
+        }
+
+        private void Main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Environment.Exit(0);
         }
     }
 }

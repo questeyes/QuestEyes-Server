@@ -48,9 +48,9 @@ namespace QuestEyes_Server
             this.updateStageLabel.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.updateStageLabel.Location = new System.Drawing.Point(8, 14);
             this.updateStageLabel.Name = "updateStageLabel";
-            this.updateStageLabel.Size = new System.Drawing.Size(150, 19);
+            this.updateStageLabel.Size = new System.Drawing.Size(208, 19);
             this.updateStageLabel.TabIndex = 2;
-            this.updateStageLabel.Text = "Checking for updates...";
+            this.updateStageLabel.Text = "Checking for firmware updates...";
             // 
             // label1
             // 
@@ -93,7 +93,7 @@ namespace QuestEyes_Server
             this.MinimizeBox = false;
             this.Name = "Updater";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "QuestEyes Firmware Updater";
+            this.Text = "QuestEyes Updater";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Updater_FormClosing);
             this.Load += new System.EventHandler(this.Updater_Load);
             this.Shown += new System.EventHandler(this.Updater_Shown);

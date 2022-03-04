@@ -79,7 +79,7 @@ namespace QuestEyes_Server
             this.checkFirmUpdate.Name = "checkFirmUpdate";
             this.checkFirmUpdate.Size = new System.Drawing.Size(177, 23);
             this.checkFirmUpdate.TabIndex = 1;
-            this.checkFirmUpdate.Text = "Check for firmware updates";
+            this.checkFirmUpdate.Text = "Check for updates";
             this.checkFirmUpdate.UseVisualStyleBackColor = true;
             this.checkFirmUpdate.Click += new System.EventHandler(this.checkFirmUpdate_Click);
             // 
@@ -263,6 +263,7 @@ namespace QuestEyes_Server
             this.MaximizeBox = false;
             this.Name = "Main";
             this.Text = "QuestEyes PC App";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Main_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
