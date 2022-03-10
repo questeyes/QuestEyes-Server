@@ -48,13 +48,13 @@ namespace QuestEyes_Server
 
         private void vrcCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (vrcCheckBox.Checked == false) //if unchecked
+            if (!vrcCheckBox.Checked) //if unchecked
             {
                 int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "VRC");
                 OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "0" };
                 OSC_SoftwareControlSystem.storeSettings();
             }
-            else if (vrcCheckBox.Checked == true) //if checked
+            else if (vrcCheckBox.Checked) //if checked
             {
                 int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "VRC");
                 OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "1" };
@@ -73,13 +73,13 @@ namespace QuestEyes_Server
 
         private void customCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            if (customCheckBox.Checked == false)
+            if (!customCheckBox.Checked)
             {
                 int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "Custom");
                 OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = OSC_SoftwareControlSystem.OSCSettings[index].Port, State = "0" };
                 OSC_SoftwareControlSystem.storeSettings();
             }
-            if (customCheckBox.Checked == true) {
+            if (customCheckBox.Checked) {
                 if (customPortBox.Text.Length == 0)
                 {
                     MessageBox.Show("Custom port cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -97,7 +97,7 @@ namespace QuestEyes_Server
 
         private void customPortBox_TextChanged(object sender, EventArgs e)
         {
-            if (customCheckBox.Checked == true)
+            if (customCheckBox.Checked)
             {
                 int index = OSC_SoftwareControlSystem.OSCSettings.FindIndex(setting => setting.Name == "Custom");
                 OSC_SoftwareControlSystem.OSCSettings[index] = new OSC_SoftwareControlSystem.OSCSetting { Name = OSC_SoftwareControlSystem.OSCSettings[index].Name, Port = customPortBox.Text, State = "1" };

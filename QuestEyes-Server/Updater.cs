@@ -52,13 +52,13 @@ namespace QuestEyes_Server
             {
                 //check for FIRMWARE UPDATE (/QuestEyes/Firmware)
                 (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = FirmwareUpdater.checkForUpdate(webClient);
-                if (firmwareUpdateAvailable == true) {
+                if (firmwareUpdateAvailable) {
                     await FirmwareUpdater.beginUpdateProceedure(firmwareVersion, firmwareChanges);
                 }
 
                 //check for SOFTWARE UPDATE (/QuestEyes/Software)
                 (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = SoftwareUpdater.checkForUpdate(webClient);
-                if (softwareUpdateAvailable == true)
+                if (softwareUpdateAvailable)
                 {
                     SoftwareUpdater.beginUpdateProceedure(softwareVersion, softwareChanges);
                 }
@@ -145,10 +145,7 @@ namespace QuestEyes_Server
                 //verify the file here
 
 
-
-                //TODO: VERIFY
-
-
+                //TODO: VERIFY OTA FILE
 
 
 
@@ -178,7 +175,6 @@ namespace QuestEyes_Server
                 SupportFunctions.outConn("Update was rejected by user.");
                 Updater.progressBar.Value = 50;
                 Updater.statusLabel.Text = "Update cancelled";
-                return;
             }
         }
 
@@ -192,7 +188,7 @@ namespace QuestEyes_Server
             Updater.closeButton.Enabled = false;
             SupportFunctions.outConn("Beginning OTA update of connected device...");
             SupportFunctions.outConn("Putting device into OTA mode...");
-            InterdeviceNetworkingFramework.communicationSocket.Send("OTA_MODE");
+            _ = InterdeviceNetworkingFramework.Send(InterdeviceNetworkingFramework.communicationSocket, "OTA_MODE");
         }
 
         private static void performRemoteUpdate()
@@ -204,7 +200,7 @@ namespace QuestEyes_Server
             });
             byte[] filebuffer = File.ReadAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConn("File length: " + filebuffer.Length);
-            InterdeviceNetworkingFramework.communicationSocket.Send(filebuffer);
+            _ = InterdeviceNetworkingFramework.SendData(InterdeviceNetworkingFramework.communicationSocket, filebuffer);
             SupportFunctions.outConn("File transferred.");
             //delete the file off the PC as its no longer required
             File.Delete(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
@@ -311,7 +307,6 @@ namespace QuestEyes_Server
                 SupportFunctions.outConn("Update was rejected by user.");
                 Updater.progressBar.Value = 100;
                 Updater.statusLabel.Text = "Update cancelled";
-                return;
             }
         }
     }

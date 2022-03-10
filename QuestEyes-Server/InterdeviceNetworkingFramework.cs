@@ -2,10 +2,12 @@
 using System.Windows.Forms;
 using System.Threading.Tasks;
 using System.Net.Sockets;
+using System.Net.WebSockets;
 using System.Text;
-using WebSocketSharp;
 using System.Timers;
 using System;
+using System.Threading;
+using System.IO;
 
 namespace QuestEyes_Server
 {
@@ -17,7 +19,7 @@ namespace QuestEyes_Server
          *  7580 command/stream socket
         **/
         public static UdpClient discoverPort;
-        public static WebSocket communicationSocket;
+        public static ClientWebSocket communicationSocket;
 
         public static string url = null;
         public static bool connected = false;
@@ -32,13 +34,13 @@ namespace QuestEyes_Server
         public static string DeviceFirmware;
         public static string DeviceMode = "NORMAL";
 
-        public static void Search()
+        public static async void Search()
         {
-            Task.Run(async () =>
+            await Task.Run(async () =>
             {
                 while (true)
                 {
-                    while (connected == false && attemptingConnect == false)
+                    while (!connected && !attemptingConnect)
                     {
                         SupportFunctions.outConn("Listening for device...");
                         Main.reconnectButton.Invoke((MethodInvoker)delegate
@@ -61,14 +63,15 @@ namespace QuestEyes_Server
                             SupportFunctions.outConn("Detected " + hostname);
                             SupportFunctions.outConn("Attempting connection to " + hostname);
                             url = "ws://" + DeviceIP + ":7580";
-                            Connect(url);
+                            communicationSocket = new ClientWebSocket();
+                            await ConnectAsync(url);
                         }
                     }
                 }
             });
         }
 
-        public static void Connect(string url)
+        public static async Task ConnectAsync(string url)
         {
             Main.connectionStatus.Invoke((MethodInvoker)delegate
             {
@@ -76,111 +79,159 @@ namespace QuestEyes_Server
                 Main.connectionStatus.ForeColor = Color.DarkOrange;
             });
 
-            //Create websocket client instance
-            communicationSocket = new WebSocket(url);
+            await communicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
 
-            communicationSocket.OnMessage += Ws_OnMessage;
-            communicationSocket.OnClose += Ws_OnClose;
-            communicationSocket.OnError += Ws_OnError;
-
-            //Attempt connection
-            communicationSocket.ConnectAsync();
+            do
+            {
+                try
+                {
+                    await Receive(communicationSocket);
+                } catch
+                {
+                    CloseWebsocket(communicationSocket);
+                }
+            } while (connected);
         }
 
-        private static void Ws_OnMessage(object sender, MessageEventArgs e)
-        {
-            if (e.IsText) //Message from system
-            {
-                //IF NAME, TREAT AS DEVICE NAME
-                //IF FIRMWARE_VER, TREAT AS FIRMWARE VERSION
-                //IF BATTERY, TREAT AS BATTERY LEVEL
-                //IF EXCESSIVE_FRAME_FAILURE, TREAT AS DEVICE ERROR, DISCONNECT AND EXPECT REBOOT
-                if (e.Data.Contains("NAME"))
-                {
-                    SupportFunctions.outConn("Successful connection confirmed");
-                    connected = true;
-                    attemptingConnect = false;
-                    heartbeatTimer = new System.Timers.Timer(10000);
-                    heartbeatTimer.Elapsed += OnHeartbeatFailure;
-                    heartbeatTimer.AutoReset = true;
-                    heartbeatTimer.Enabled = true;
-                    Main.reconnectButton.Invoke((MethodInvoker)delegate
-                    {
-                        Main.reconnectButton.Enabled = true;
-                        Main.updateButton.Enabled = true;
-                    });
-                    string[] split = e.Data.Split(' ');
-                    Main.connectionStatus.Invoke((MethodInvoker)delegate
-                    {
-                        Main.connectionStatus.Text = "Connected to " + split[1];
-                        Main.connectionStatus.ForeColor = Color.Green;
-                    });
-                    DeviceName = split[1];
-                    return;
-                }
-                if (e.Data.Contains("FIRMWARE_VER"))
-                {
-                    string[] split = e.Data.Split(' ');
-                    Main.firmwareVersion.Invoke((MethodInvoker)delegate
-                    {
-                        Main.firmwareVersion.Text = "Device firmware version: " + split[1];
-                    });
-                    SupportFunctions.outConn("Device reported firmware version " + split[1]);
-                    DeviceFirmware = split[1];
-                    return;
-                }
-                if (e.Data.Contains("BATTERY"))
-                {
+        public static async Task Send(ClientWebSocket socket, string data) => await socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true, CancellationToken.None);
+        public static async Task SendData(ClientWebSocket socket, byte[] data) => await socket.SendAsync(data, WebSocketMessageType.Binary, true, CancellationToken.None);
 
-                    return;
-                }
-                if (e.Data.Contains("HEARTBEAT"))
-                {
-                    heartbeatTimer.Interval = 10000;
-                    return;
-                }
-                if (e.Data.Contains("EXCESSIVE_FRAME_FAILURE"))
-                {
-                    SupportFunctions.outConn("ERROR: Device reported excessive frame failure, disconnecting...");
-                    heartbeatTimer.Stop();
-                    heartbeatTimer.Close();
-                    communicationSocket.Close();
-                    return;
-                }
-                if (e.Data.Contains("OTA_MODE_ACTIVE"))
-                {
-                    SupportFunctions.outConn("Device has entered OTA mode.");
-                    Main.connectionStatus.Invoke((MethodInvoker)delegate
-                    {
-                        Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
-                        Main.connectionStatus.Text = "Connected in OTA mode";
-                    });
-                    DeviceMode = "OTA";
-                }
-                else
-                {
-                    SupportFunctions.outConn("Invalid command received from device: " + e.Data);
-                    return;
-                }
-            }
-            else if (e.IsBinary) //Image from system
+        static async Task Receive(ClientWebSocket socket)
+        {
+            var buffer = new ArraySegment<byte>(new byte[2048]);
+            do
             {
-                (int right_X, int right_Y, int left_X, int left_Y) = EyeTrackingFramework.detectEyes(e.RawData);
-            }
+                WebSocketReceiveResult result;
+                using (var ms = new MemoryStream())
+                {
+                    do
+                    {
+                        result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+                        ms.Write(buffer.Array, buffer.Offset, result.Count);
+                    } while (!result.EndOfMessage);
+
+                    if (result.MessageType == WebSocketMessageType.Close)
+                    {
+                        //websocket is closed
+                        await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Websocket Closed", CancellationToken.None);
+                        socket.Dispose();
+                        return;
+                    }
+
+                    else if (result.MessageType == WebSocketMessageType.Text)
+                    {
+                        //message is a text message
+                        await TextReceiveAsync(socket, ms);
+                        return;
+                    }
+
+                    else if (result.MessageType == WebSocketMessageType.Binary)
+                    {
+                        //message is binary
+                        BinaryReceive(ms);
+                        return;
+                    }
+                }
+            } while (true);
         }
 
         private static void OnHeartbeatFailure(object sender, ElapsedEventArgs e)
         {
             //heartbeat was failed to be received within 10 seconds...
             SupportFunctions.outConn("ERROR: Device timed out, Disconnecting...");
-            heartbeatTimer.Stop();
-            heartbeatTimer.Close();
-            communicationSocket.Close();
+            CloseWebsocket(communicationSocket);
         }
 
-        private static void Ws_OnClose(object sender, CloseEventArgs e)
+        private static async Task TextReceiveAsync(WebSocket socket, MemoryStream ms)
         {
-            SupportFunctions.outConn("Disconnected from device");
+            //IF NAME, TREAT AS DEVICE NAME
+            //IF FIRMWARE_VER, TREAT AS FIRMWARE VERSION
+            //IF BATTERY, TREAT AS BATTERY LEVEL
+            //IF EXCESSIVE_FRAME_FAILURE, TREAT AS DEVICE ERROR, DISCONNECT AND EXPECT REBOOT
+
+            string messageText;
+
+            ms.Seek(0, SeekOrigin.Begin);
+            using (var reader = new StreamReader(ms, Encoding.UTF8))
+                messageText = await reader.ReadToEndAsync();
+
+            if (messageText.Contains("NAME"))
+            {
+                SupportFunctions.outConn("Successful connection confirmed");
+                connected = true;
+                attemptingConnect = false;
+                heartbeatTimer = new System.Timers.Timer(10000);
+                heartbeatTimer.Elapsed += OnHeartbeatFailure;
+                heartbeatTimer.AutoReset = true;
+                heartbeatTimer.Enabled = true;
+                Main.reconnectButton.Invoke((MethodInvoker)delegate
+                {
+                    Main.reconnectButton.Enabled = true;
+                    Main.updateButton.Enabled = true;
+                });
+                string[] split = messageText.Split(' ');
+                Main.connectionStatus.Invoke((MethodInvoker)delegate
+                {
+                    Main.connectionStatus.Text = "Connected to " + split[1];
+                    Main.connectionStatus.ForeColor = Color.Green;
+                });
+                DeviceName = split[1];
+                return;
+            }
+            if (messageText.Contains("FIRMWARE_VER"))
+            {
+                string[] split = messageText.Split(' ');
+                Main.firmwareVersion.Invoke((MethodInvoker)delegate
+                {
+                    Main.firmwareVersion.Text = "Device firmware version: " + split[1];
+                });
+                SupportFunctions.outConn("Device reported firmware version " + split[1]);
+                DeviceFirmware = split[1];
+                return;
+            }
+            if (messageText.Contains("BATTERY"))
+            {
+                //TODO: ADD BATTERY PARSING
+                return;
+            }
+            if (messageText.Contains("HEARTBEAT"))
+            {
+                heartbeatTimer.Interval = 10000;
+                return;
+            }
+            if (messageText.Contains("EXCESSIVE_FRAME_FAILURE"))
+            {
+                SupportFunctions.outConn("ERROR: Device reported excessive frame failure, disconnecting...");
+                heartbeatTimer.Stop();
+                heartbeatTimer.Close();
+               
+                return;
+            }
+            if (messageText.Contains("OTA_MODE_ACTIVE"))
+            {
+                SupportFunctions.outConn("Device has entered OTA mode.");
+                Main.connectionStatus.Invoke((MethodInvoker)delegate
+                {
+                    Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
+                    Main.connectionStatus.Text = "Connected in OTA mode";
+                });
+                DeviceMode = "OTA";
+            }
+            else
+            {
+                SupportFunctions.outConn("Invalid command received from device: " + messageText);
+                return;
+            }
+        }
+
+        private static void BinaryReceive(MemoryStream ms)
+        {
+            (int right_X, int right_Y, int left_X, int left_Y) = EyeTrackingFramework.detectEyes(ms.ToArray());
+        }
+
+        public static void CloseWebsocket(WebSocket socket)
+        {
+            socket.Dispose();
             heartbeatTimer.Stop();
             heartbeatTimer.Close();
             Main.connectionStatus.Invoke((MethodInvoker)delegate
@@ -197,21 +248,13 @@ namespace QuestEyes_Server
             connected = false;
             attemptingConnect = false;
 
-
-            if (DiagnosticsPanel.diagnosticsOpen == true)
+            if (DiagnosticsPanel.diagnosticsOpen)
             {
                 DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
                 {
                     DiagnosticsPanel.decodeError.Visible = true;
                 });
             }
-        }
-
-        private static void Ws_OnError(object sender, WebSocketSharp.ErrorEventArgs e)
-        {
-            SupportFunctions.outConn("Socket error: " + e);
-            SupportFunctions.outConn("Closing connection");
-            communicationSocket.Close();
         }
     }
 }
