@@ -56,9 +56,10 @@ namespace QuestEyes_Server
             // rightX
             // 
             this.rightX.AutoSize = true;
-            this.rightX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rightX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rightX.ForeColor = System.Drawing.SystemColors.Control;
-            this.rightX.Location = new System.Drawing.Point(403, 357);
+            this.rightX.Location = new System.Drawing.Point(433, 363);
+            this.rightX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rightX.Name = "rightX";
             this.rightX.Size = new System.Drawing.Size(114, 13);
             this.rightX.TabIndex = 17;
@@ -67,9 +68,10 @@ namespace QuestEyes_Server
             // rightY
             // 
             this.rightY.AutoSize = true;
-            this.rightY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.rightY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rightY.ForeColor = System.Drawing.SystemColors.Control;
-            this.rightY.Location = new System.Drawing.Point(403, 343);
+            this.rightY.Location = new System.Drawing.Point(433, 347);
+            this.rightY.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rightY.Name = "rightY";
             this.rightY.Size = new System.Drawing.Size(114, 13);
             this.rightY.TabIndex = 16;
@@ -78,9 +80,10 @@ namespace QuestEyes_Server
             // leftX
             // 
             this.leftX.AutoSize = true;
-            this.leftX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.leftX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.leftX.ForeColor = System.Drawing.SystemColors.Control;
-            this.leftX.Location = new System.Drawing.Point(278, 357);
+            this.leftX.Location = new System.Drawing.Point(287, 363);
+            this.leftX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.leftX.Name = "leftX";
             this.leftX.Size = new System.Drawing.Size(107, 13);
             this.leftX.TabIndex = 15;
@@ -89,9 +92,10 @@ namespace QuestEyes_Server
             // leftY
             // 
             this.leftY.AutoSize = true;
-            this.leftY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.leftY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.leftY.ForeColor = System.Drawing.SystemColors.Control;
-            this.leftY.Location = new System.Drawing.Point(278, 343);
+            this.leftY.Location = new System.Drawing.Point(287, 347);
+            this.leftY.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.leftY.Name = "leftY";
             this.leftY.Size = new System.Drawing.Size(107, 13);
             this.leftY.TabIndex = 14;
@@ -100,9 +104,10 @@ namespace QuestEyes_Server
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.label1.ForeColor = System.Drawing.SystemColors.ButtonShadow;
-            this.label1.Location = new System.Drawing.Point(243, 321);
+            this.label1.Location = new System.Drawing.Point(247, 321);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(308, 13);
             this.label1.TabIndex = 18;
@@ -113,9 +118,10 @@ namespace QuestEyes_Server
             // 
             this.decodeErrorMessage.AutoSize = true;
             this.decodeErrorMessage.BackColor = System.Drawing.Color.Transparent;
-            this.decodeErrorMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.decodeErrorMessage.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.decodeErrorMessage.ForeColor = System.Drawing.SystemColors.ControlLightLight;
-            this.decodeErrorMessage.Location = new System.Drawing.Point(332, 139);
+            this.decodeErrorMessage.Location = new System.Drawing.Point(339, 140);
+            this.decodeErrorMessage.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.decodeErrorMessage.Name = "decodeErrorMessage";
             this.decodeErrorMessage.Size = new System.Drawing.Size(128, 26);
             this.decodeErrorMessage.TabIndex = 19;
@@ -126,10 +132,11 @@ namespace QuestEyes_Server
             // 
             this.truepic.BackColor = System.Drawing.SystemColors.Control;
             this.truepic.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.truepic.Location = new System.Drawing.Point(12, 12);
+            this.truepic.Location = new System.Drawing.Point(14, 14);
+            this.truepic.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.truepic.Name = "truepic";
-            this.truepic.Size = new System.Drawing.Size(768, 298);
-            this.truepic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+            this.truepic.Size = new System.Drawing.Size(778, 301);
+            this.truepic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.truepic.TabIndex = 21;
             this.truepic.TabStop = false;
             // 
@@ -137,9 +144,10 @@ namespace QuestEyes_Server
             // 
             this.leftImage.BackColor = System.Drawing.SystemColors.Control;
             this.leftImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.leftImage.Location = new System.Drawing.Point(78, 272);
+            this.leftImage.Location = new System.Drawing.Point(77, 281);
+            this.leftImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.leftImage.Name = "leftImage";
-            this.leftImage.Size = new System.Drawing.Size(120, 75);
+            this.leftImage.Size = new System.Drawing.Size(140, 86);
             this.leftImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.leftImage.TabIndex = 22;
             this.leftImage.TabStop = false;
@@ -148,27 +156,30 @@ namespace QuestEyes_Server
             // 
             this.rightImage.BackColor = System.Drawing.SystemColors.Control;
             this.rightImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rightImage.Location = new System.Drawing.Point(613, 272);
+            this.rightImage.Location = new System.Drawing.Point(582, 281);
+            this.rightImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rightImage.Name = "rightImage";
-            this.rightImage.Size = new System.Drawing.Size(120, 75);
+            this.rightImage.Size = new System.Drawing.Size(140, 86);
             this.rightImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.rightImage.TabIndex = 23;
             this.rightImage.TabStop = false;
             // 
             // textBox1
             // 
-            this.textBox1.Location = new System.Drawing.Point(98, 406);
+            this.textBox1.Location = new System.Drawing.Point(56, 414);
+            this.textBox1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.Size = new System.Drawing.Size(116, 23);
             this.textBox1.TabIndex = 24;
             this.textBox1.Text = "100";
             this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // textBox2
             // 
-            this.textBox2.Location = new System.Drawing.Point(223, 406);
+            this.textBox2.Location = new System.Drawing.Point(202, 414);
+            this.textBox2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 20);
+            this.textBox2.Size = new System.Drawing.Size(116, 23);
             this.textBox2.TabIndex = 25;
             this.textBox2.Text = "65";
             this.textBox2.TextChanged += new System.EventHandler(this.textBox2_TextChanged);
@@ -176,62 +187,69 @@ namespace QuestEyes_Server
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(108, 387);
+            this.label2.Location = new System.Drawing.Point(68, 393);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(83, 13);
+            this.label2.Size = new System.Drawing.Size(91, 15);
             this.label2.TabIndex = 26;
             this.label2.Text = "cannyThreshold";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(212, 387);
+            this.label3.Location = new System.Drawing.Point(189, 393);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(138, 13);
+            this.label3.Size = new System.Drawing.Size(156, 15);
             this.label3.TabIndex = 27;
             this.label3.Text = "circleAccumulatorThreshold";
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(499, 387);
+            this.label4.Location = new System.Drawing.Point(524, 393);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(46, 13);
+            this.label4.Size = new System.Drawing.Size(50, 15);
             this.label4.TabIndex = 31;
             this.label4.Text = "maxRad";
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(375, 387);
+            this.label5.Location = new System.Drawing.Point(380, 393);
+            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(56, 13);
+            this.label5.Size = new System.Drawing.Size(63, 15);
             this.label5.TabIndex = 30;
             this.label5.Text = "minRadius";
             // 
             // textBox3
             // 
-            this.textBox3.Location = new System.Drawing.Point(473, 406);
+            this.textBox3.Location = new System.Drawing.Point(494, 414);
+            this.textBox3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(100, 20);
+            this.textBox3.Size = new System.Drawing.Size(116, 23);
             this.textBox3.TabIndex = 29;
             this.textBox3.Text = "100";
             this.textBox3.TextChanged += new System.EventHandler(this.textBox3_TextChanged);
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(352, 406);
+            this.textBox4.Location = new System.Drawing.Point(353, 414);
+            this.textBox4.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(100, 20);
+            this.textBox4.Size = new System.Drawing.Size(116, 23);
             this.textBox4.TabIndex = 28;
             this.textBox4.Text = "1";
             this.textBox4.TextChanged += new System.EventHandler(this.textBox4_TextChanged);
             // 
             // textBox5
             // 
-            this.textBox5.Location = new System.Drawing.Point(594, 406);
+            this.textBox5.Location = new System.Drawing.Point(635, 414);
+            this.textBox5.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(100, 20);
+            this.textBox5.Size = new System.Drawing.Size(116, 23);
             this.textBox5.TabIndex = 32;
             this.textBox5.Text = "17";
             this.textBox5.TextChanged += new System.EventHandler(this.textBox5_TextChanged);
@@ -239,18 +257,19 @@ namespace QuestEyes_Server
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(627, 387);
+            this.label6.Location = new System.Drawing.Point(674, 393);
+            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(24, 13);
+            this.label6.Size = new System.Drawing.Size(28, 15);
             this.label6.TabIndex = 33;
             this.label6.Text = "blur";
             // 
-            // Diagnostics
+            // DiagnosticsPanel
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(126)))), ((int)(((byte)(65)))), ((int)(((byte)(217)))));
-            this.ClientSize = new System.Drawing.Size(792, 441);
+            this.ClientSize = new System.Drawing.Size(807, 453);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.textBox5);
             this.Controls.Add(this.label4);
@@ -271,8 +290,9 @@ namespace QuestEyes_Server
             this.Controls.Add(this.leftY);
             this.Controls.Add(this.truepic);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
-            this.Name = "Diagnostics";
+            this.Name = "DiagnosticsPanel";
             this.Text = "QuestEyes Diagnostics";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Diagnostics_FormClosing);
             this.Load += new System.EventHandler(this.Diagnostics_Load);

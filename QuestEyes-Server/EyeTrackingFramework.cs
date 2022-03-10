@@ -108,7 +108,7 @@ namespace QuestEyes_Server
                     foreach (CircleSegment circle in circles)
                         Cv2.Circle(left, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
 
-                    if (DiagnosticsPanel.diagnosticsOpen == true)
+                    if (DiagnosticsPanel.diagnosticsOpen)
                     {
                         //convert to bitmap and send to diagnostics panel
                         Bitmap left_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(left);
@@ -159,7 +159,7 @@ namespace QuestEyes_Server
                         Cv2.Circle(right, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
 
 
-                    if (DiagnosticsPanel.diagnosticsOpen == true)
+                    if (DiagnosticsPanel.diagnosticsOpen)
                     {
                         //convert to bitmap and send to diagnostics panel
                         Bitmap right_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(right);
@@ -168,7 +168,7 @@ namespace QuestEyes_Server
                 }
             }
 
-            if (DiagnosticsPanel.diagnosticsOpen == true)
+            if (DiagnosticsPanel.diagnosticsOpen)
             {
                 //convert to bitmap and send to diagnostics panel
                 Bitmap result_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(main);

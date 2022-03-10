@@ -6,7 +6,7 @@ namespace QuestEyes_Server
 { 
     public partial class Main : Form
     {
-        public static string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
+        public static readonly string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
 
         public static DiagnosticsPanel diagnosticsWindow;
         public static Label connectionStatus;
@@ -47,7 +47,7 @@ namespace QuestEyes_Server
 
         private void diagnostics_Click(object sender, EventArgs e)
         {
-            if (DiagnosticsPanel.diagnosticsOpen == false)
+            if (!DiagnosticsPanel.diagnosticsOpen)
             {
                 DiagnosticsPanel diagnosticsWindow = new DiagnosticsPanel();
                 diagnosticsWindow.Show();
@@ -56,7 +56,7 @@ namespace QuestEyes_Server
 
         private void infoButton_Click(object sender, EventArgs e)
         {
-            if (AboutPanel.aboutOpen == false)
+            if (!AboutPanel.aboutOpen)
             {
                 AboutPanel aboutWindow = new AboutPanel();
                 aboutWindow.Show();
@@ -68,13 +68,13 @@ namespace QuestEyes_Server
             SupportFunctions.outConn("Forcing reconnect per user request...");
             Task.Run(() =>
             {
-                InterdeviceNetworkingFramework.communicationSocket.Close();
+                InterdeviceNetworkingFramework.CloseWebsocket(InterdeviceNetworkingFramework.communicationSocket);
             });
         }
 
         private void checkFirmUpdate_Click(object sender, EventArgs e)
         {
-            if (Updater.updaterOpen == false)
+            if (!Updater.updaterOpen)
             {
                 Updater updater = new Updater();
                 updater.Show();
@@ -83,12 +83,12 @@ namespace QuestEyes_Server
 
         private void resetDevice_Click(object sender, EventArgs e)
         {
-
+            //TODO: Reset Device system
         }
 
         private void oscButton_Click(object sender, EventArgs e)
         {
-            if (OSCControlPanel.oscOpen == false)
+            if (!OSCControlPanel.oscOpen)
             {
                 OSCControlPanel osccontrol = new OSCControlPanel();
                 osccontrol.Show();
