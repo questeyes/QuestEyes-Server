@@ -5,7 +5,7 @@ namespace QuestEyes_Server
 {
     class OSC_CommunicationFramework
     {
-        public static void UponOpenInitialize()
+        public static void LoadOSCCommunication()
         {
             foreach (OSC_SoftwareControlSystem.OSCSetting setting in OSC_SoftwareControlSystem.OSCSettings)
             {

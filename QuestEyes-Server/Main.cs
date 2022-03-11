@@ -27,11 +27,11 @@ namespace QuestEyes_Server
             console = consoleBox;
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        private void Main_Load(object sender, EventArgs e)
         {
             OSC_SoftwareControlSystem.generateSettingsStorage();
             OSC_SoftwareControlSystem.readSettings();
-            OSC_CommunicationFramework.UponOpenInitialize();
+            OSC_CommunicationFramework.LoadOSCCommunication();
             EyeTrackingFramework.loadEyeClassifierData();
             Activated += AfterLoading;
         }
@@ -68,7 +68,9 @@ namespace QuestEyes_Server
             SupportFunctions.outConsole("Forcing reconnect per user request...");
             Task.Run(() =>
             {
-                InterdeviceNetworkingFramework.CloseWebsocket(InterdeviceNetworkingFramework.communicationSocket);
+                InterdeviceNetworkingFramework.heartbeatTimer.Stop();
+                InterdeviceNetworkingFramework.heartbeatTimer.Close();
+                InterdeviceNetworkingFramework.CloseCommunicationSocket(InterdeviceNetworkingFramework.communicationSocket);
             });
         }
 
@@ -90,8 +92,8 @@ namespace QuestEyes_Server
         {
             if (!OSCControlPanel.oscOpen)
             {
-                OSCControlPanel osccontrol = new OSCControlPanel();
-                osccontrol.Show();
+                OSCControlPanel oscControl = new OSCControlPanel();
+                oscControl.Show();
             }
         }
 

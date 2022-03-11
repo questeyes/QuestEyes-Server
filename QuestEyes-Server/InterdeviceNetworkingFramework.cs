@@ -16,7 +16,7 @@ namespace QuestEyes_Server
         /** 
          * PORTS:
          *  7579 device discovery port
-         *  7580 command/stream socket
+         *  7580 command/ota/stream socket
         **/
         public static UdpClient discoverPort;
         public static ClientWebSocket communicationSocket;
@@ -25,6 +25,7 @@ namespace QuestEyes_Server
         public static bool connected = false;
         public static bool attemptingConnect = false;
         public static System.Timers.Timer heartbeatTimer;
+        public static System.Timers.Timer connectionTimeoutTimer;
 
         public static string packet = null;
         public static string[] packetInfo = new string[0];
@@ -42,7 +43,7 @@ namespace QuestEyes_Server
                 {
                     while (!connected && !attemptingConnect)
                     {
-                        SupportFunctions.outConsole("Listening for device...");
+                        SupportFunctions.outConsole("Searching for device...");
                         Main.reconnectButton.Invoke((MethodInvoker)delegate
                         {
                             Main.reconnectButton.Enabled = false;
@@ -79,24 +80,39 @@ namespace QuestEyes_Server
                 Main.connectionStatus.ForeColor = Color.DarkOrange;
             });
 
+            connectionTimeoutTimer = new System.Timers.Timer(10000);
+            connectionTimeoutTimer.Elapsed += OnConnectionTimeout;
+            connectionTimeoutTimer.AutoReset = true;
+            connectionTimeoutTimer.Enabled = true;
+
             try
             {
                 await communicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
             } catch
             {
-                SupportFunctions.outConsole("Failed to connect to device");
+                //ignore
             }
             
-            do
-            {
+            do {
                 try
                 {
                     await Receive(communicationSocket);
                 } catch
                 {
-                    CloseWebsocket(communicationSocket);
+                    CloseCommunicationSocket(communicationSocket);
                 }
             } while (connected);
+        }
+
+        private static void OnConnectionTimeout(object sender, ElapsedEventArgs e)
+        {
+            //connection failed within 10 seconds...
+            connectionTimeoutTimer.Stop();
+            connectionTimeoutTimer.Close();
+            SupportFunctions.outConsole("ERROR: Failed to establish connection to device.");
+            communicationSocket.Abort();
+            communicationSocket.Dispose();
+            attemptingConnect = false;
         }
 
         public static async Task Send(ClientWebSocket socket, string data) => await socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true, CancellationToken.None);
@@ -145,7 +161,9 @@ namespace QuestEyes_Server
         {
             //heartbeat was failed to be received within 10 seconds...
             SupportFunctions.outConsole("ERROR: Device timed out, Disconnecting...");
-            CloseWebsocket(communicationSocket);
+            heartbeatTimer.Stop();
+            heartbeatTimer.Close();
+            CloseCommunicationSocket(communicationSocket);
         }
 
         private static async Task TextReceiveAsync(WebSocket socket, MemoryStream ms)
@@ -163,6 +181,8 @@ namespace QuestEyes_Server
 
             if (messageText.Contains("NAME"))
             {
+                connectionTimeoutTimer.Stop();
+                connectionTimeoutTimer.Close();
                 SupportFunctions.outConsole("Successful connection confirmed");
                 connected = true;
                 attemptingConnect = false;
@@ -210,7 +230,7 @@ namespace QuestEyes_Server
                 SupportFunctions.outConsole("ERROR: Device reported excessive frame failure, disconnecting...");
                 heartbeatTimer.Stop();
                 heartbeatTimer.Close();
-               
+                CloseCommunicationSocket(communicationSocket);
                 return;
             }
             if (messageText.Contains("OTA_MODE_ACTIVE"))
@@ -235,11 +255,9 @@ namespace QuestEyes_Server
             (int right_X, int right_Y, int left_X, int left_Y) = EyeTrackingFramework.detectEyes(ms.ToArray());
         }
 
-        public static void CloseWebsocket(WebSocket socket)
+        public static void CloseCommunicationSocket(WebSocket socket)
         {
             socket.Dispose();
-            heartbeatTimer.Stop();
-            heartbeatTimer.Close();
             Main.connectionStatus.Invoke((MethodInvoker)delegate
             {
                 Main.connectionStatus.ForeColor = Color.FromArgb(192, 0, 0);
