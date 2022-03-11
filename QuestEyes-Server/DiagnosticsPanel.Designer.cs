@@ -58,7 +58,7 @@ namespace QuestEyes_Server
             this.rightX.AutoSize = true;
             this.rightX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rightX.ForeColor = System.Drawing.SystemColors.Control;
-            this.rightX.Location = new System.Drawing.Point(433, 363);
+            this.rightX.Location = new System.Drawing.Point(419, 358);
             this.rightX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rightX.Name = "rightX";
             this.rightX.Size = new System.Drawing.Size(114, 13);
@@ -70,7 +70,7 @@ namespace QuestEyes_Server
             this.rightY.AutoSize = true;
             this.rightY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.rightY.ForeColor = System.Drawing.SystemColors.Control;
-            this.rightY.Location = new System.Drawing.Point(433, 347);
+            this.rightY.Location = new System.Drawing.Point(419, 342);
             this.rightY.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.rightY.Name = "rightY";
             this.rightY.Size = new System.Drawing.Size(114, 13);
@@ -82,7 +82,7 @@ namespace QuestEyes_Server
             this.leftX.AutoSize = true;
             this.leftX.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.leftX.ForeColor = System.Drawing.SystemColors.Control;
-            this.leftX.Location = new System.Drawing.Point(287, 363);
+            this.leftX.Location = new System.Drawing.Point(273, 358);
             this.leftX.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.leftX.Name = "leftX";
             this.leftX.Size = new System.Drawing.Size(107, 13);
@@ -94,7 +94,7 @@ namespace QuestEyes_Server
             this.leftY.AutoSize = true;
             this.leftY.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.leftY.ForeColor = System.Drawing.SystemColors.Control;
-            this.leftY.Location = new System.Drawing.Point(287, 347);
+            this.leftY.Location = new System.Drawing.Point(273, 342);
             this.leftY.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.leftY.Name = "leftY";
             this.leftY.Size = new System.Drawing.Size(107, 13);
@@ -136,7 +136,7 @@ namespace QuestEyes_Server
             this.truepic.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.truepic.Name = "truepic";
             this.truepic.Size = new System.Drawing.Size(778, 301);
-            this.truepic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.truepic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
             this.truepic.TabIndex = 21;
             this.truepic.TabStop = false;
             // 
@@ -144,7 +144,7 @@ namespace QuestEyes_Server
             // 
             this.leftImage.BackColor = System.Drawing.SystemColors.Control;
             this.leftImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.leftImage.Location = new System.Drawing.Point(77, 281);
+            this.leftImage.Location = new System.Drawing.Point(77, 287);
             this.leftImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.leftImage.Name = "leftImage";
             this.leftImage.Size = new System.Drawing.Size(140, 86);
@@ -156,7 +156,7 @@ namespace QuestEyes_Server
             // 
             this.rightImage.BackColor = System.Drawing.SystemColors.Control;
             this.rightImage.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.rightImage.Location = new System.Drawing.Point(582, 281);
+            this.rightImage.Location = new System.Drawing.Point(582, 287);
             this.rightImage.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rightImage.Name = "rightImage";
             this.rightImage.Size = new System.Drawing.Size(140, 86);

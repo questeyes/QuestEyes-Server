@@ -151,12 +151,12 @@ namespace QuestEyes_Server
             // oscTitle
             // 
             this.oscTitle.AutoSize = true;
-            this.oscTitle.Font = new System.Drawing.Font("Microsoft YaHei", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.oscTitle.Font = new System.Drawing.Font("Microsoft YaHei", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.oscTitle.ForeColor = System.Drawing.SystemColors.InactiveBorder;
-            this.oscTitle.Location = new System.Drawing.Point(118, 22);
+            this.oscTitle.Location = new System.Drawing.Point(102, 17);
             this.oscTitle.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.oscTitle.Name = "oscTitle";
-            this.oscTitle.Size = new System.Drawing.Size(137, 19);
+            this.oscTitle.Size = new System.Drawing.Size(169, 22);
             this.oscTitle.TabIndex = 22;
             this.oscTitle.Text = "OSC output control";
             // 

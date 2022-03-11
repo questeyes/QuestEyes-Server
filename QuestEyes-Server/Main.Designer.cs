@@ -77,7 +77,7 @@ namespace QuestEyes_Server
             // 
             this.checkFirmUpdate.Enabled = false;
             this.checkFirmUpdate.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.checkFirmUpdate.Location = new System.Drawing.Point(14, 227);
+            this.checkFirmUpdate.Location = new System.Drawing.Point(14, 224);
             this.checkFirmUpdate.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.checkFirmUpdate.Name = "checkFirmUpdate";
             this.checkFirmUpdate.Size = new System.Drawing.Size(177, 27);
@@ -90,7 +90,7 @@ namespace QuestEyes_Server
             // 
             this.forceReconnect.Enabled = false;
             this.forceReconnect.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.forceReconnect.Location = new System.Drawing.Point(197, 227);
+            this.forceReconnect.Location = new System.Drawing.Point(197, 224);
             this.forceReconnect.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.forceReconnect.Name = "forceReconnect";
             this.forceReconnect.Size = new System.Drawing.Size(177, 27);
@@ -102,10 +102,10 @@ namespace QuestEyes_Server
             // diagnostics
             // 
             this.diagnostics.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.diagnostics.Location = new System.Drawing.Point(199, 258);
+            this.diagnostics.Location = new System.Drawing.Point(197, 255);
             this.diagnostics.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.diagnostics.Name = "diagnostics";
-            this.diagnostics.Size = new System.Drawing.Size(175, 27);
+            this.diagnostics.Size = new System.Drawing.Size(177, 27);
             this.diagnostics.TabIndex = 4;
             this.diagnostics.Text = "Diagnostics";
             this.diagnostics.UseVisualStyleBackColor = true;
@@ -115,7 +115,7 @@ namespace QuestEyes_Server
             // 
             this.resetDevice.Enabled = false;
             this.resetDevice.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.resetDevice.Location = new System.Drawing.Point(14, 258);
+            this.resetDevice.Location = new System.Drawing.Point(14, 255);
             this.resetDevice.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.resetDevice.Name = "resetDevice";
             this.resetDevice.Size = new System.Drawing.Size(177, 27);
@@ -129,7 +129,7 @@ namespace QuestEyes_Server
             this.title.AutoSize = true;
             this.title.Font = new System.Drawing.Font("Microsoft YaHei", 20.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
             this.title.ForeColor = System.Drawing.SystemColors.Control;
-            this.title.Location = new System.Drawing.Point(118, 19);
+            this.title.Location = new System.Drawing.Point(118, 14);
             this.title.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.title.Name = "title";
             this.title.Size = new System.Drawing.Size(155, 36);
@@ -160,7 +160,7 @@ namespace QuestEyes_Server
             this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel1.Controls.Add(this.conStatLabel);
             this.panel1.Controls.Add(this.conStat);
-            this.panel1.Location = new System.Drawing.Point(14, 80);
+            this.panel1.Location = new System.Drawing.Point(14, 72);
             this.panel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(360, 42);
@@ -193,7 +193,7 @@ namespace QuestEyes_Server
             // 
             this.panel2.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel2.Controls.Add(this.batPercentage);
-            this.panel2.Location = new System.Drawing.Point(14, 128);
+            this.panel2.Location = new System.Drawing.Point(14, 121);
             this.panel2.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(360, 42);
@@ -203,7 +203,7 @@ namespace QuestEyes_Server
             // 
             this.panel3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.panel3.Controls.Add(this.firmwareVer);
-            this.panel3.Location = new System.Drawing.Point(14, 177);
+            this.panel3.Location = new System.Drawing.Point(14, 170);
             this.panel3.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.panel3.Name = "panel3";
             this.panel3.Size = new System.Drawing.Size(360, 42);
@@ -236,7 +236,7 @@ namespace QuestEyes_Server
             // oscButton
             // 
             this.oscButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.oscButton.Location = new System.Drawing.Point(14, 290);
+            this.oscButton.Location = new System.Drawing.Point(14, 287);
             this.oscButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.oscButton.Name = "oscButton";
             this.oscButton.Size = new System.Drawing.Size(360, 27);
@@ -249,7 +249,7 @@ namespace QuestEyes_Server
             // 
             this.calibrateButton.Enabled = false;
             this.calibrateButton.FlatAppearance.BorderColor = System.Drawing.Color.Black;
-            this.calibrateButton.Location = new System.Drawing.Point(14, 321);
+            this.calibrateButton.Location = new System.Drawing.Point(14, 318);
             this.calibrateButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.calibrateButton.Name = "calibrateButton";
             this.calibrateButton.Size = new System.Drawing.Size(360, 27);

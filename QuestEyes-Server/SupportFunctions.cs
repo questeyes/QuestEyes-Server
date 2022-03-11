@@ -6,7 +6,7 @@ namespace QuestEyes_Server
 {
     public partial class SupportFunctions
     {
-        public static void outConn(string msg)
+        public static void outConsole(string msg)
         {
             Main.console.Invoke((MethodInvoker)delegate
             {

@@ -65,7 +65,7 @@ namespace QuestEyes_Server
 
         private void forceReconnect_Click(object sender, EventArgs e)
         {
-            SupportFunctions.outConn("Forcing reconnect per user request...");
+            SupportFunctions.outConsole("Forcing reconnect per user request...");
             Task.Run(() =>
             {
                 InterdeviceNetworkingFramework.CloseWebsocket(InterdeviceNetworkingFramework.communicationSocket);

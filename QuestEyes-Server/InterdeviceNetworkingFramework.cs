@@ -42,7 +42,7 @@ namespace QuestEyes_Server
                 {
                     while (!connected && !attemptingConnect)
                     {
-                        SupportFunctions.outConn("Listening for device...");
+                        SupportFunctions.outConsole("Listening for device...");
                         Main.reconnectButton.Invoke((MethodInvoker)delegate
                         {
                             Main.reconnectButton.Enabled = false;
@@ -60,8 +60,8 @@ namespace QuestEyes_Server
                             attemptingConnect = true;
                             string hostname = packetInfo[1];
                             DeviceIP = packetInfo[2];
-                            SupportFunctions.outConn("Detected " + hostname);
-                            SupportFunctions.outConn("Attempting connection to " + hostname);
+                            SupportFunctions.outConsole("Detected " + hostname);
+                            SupportFunctions.outConsole("Attempting connection to " + hostname);
                             url = "ws://" + DeviceIP + ":7580";
                             communicationSocket = new ClientWebSocket();
                             await ConnectAsync(url);
@@ -79,8 +79,14 @@ namespace QuestEyes_Server
                 Main.connectionStatus.ForeColor = Color.DarkOrange;
             });
 
-            await communicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
-
+            try
+            {
+                await communicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
+            } catch
+            {
+                SupportFunctions.outConsole("Failed to connect to device");
+            }
+            
             do
             {
                 try
@@ -138,7 +144,7 @@ namespace QuestEyes_Server
         private static void OnHeartbeatFailure(object sender, ElapsedEventArgs e)
         {
             //heartbeat was failed to be received within 10 seconds...
-            SupportFunctions.outConn("ERROR: Device timed out, Disconnecting...");
+            SupportFunctions.outConsole("ERROR: Device timed out, Disconnecting...");
             CloseWebsocket(communicationSocket);
         }
 
@@ -157,7 +163,7 @@ namespace QuestEyes_Server
 
             if (messageText.Contains("NAME"))
             {
-                SupportFunctions.outConn("Successful connection confirmed");
+                SupportFunctions.outConsole("Successful connection confirmed");
                 connected = true;
                 attemptingConnect = false;
                 heartbeatTimer = new System.Timers.Timer(10000);
@@ -185,7 +191,7 @@ namespace QuestEyes_Server
                 {
                     Main.firmwareVersion.Text = "Device firmware version: " + split[1];
                 });
-                SupportFunctions.outConn("Device reported firmware version " + split[1]);
+                SupportFunctions.outConsole("Device reported firmware version " + split[1]);
                 DeviceFirmware = split[1];
                 return;
             }
@@ -201,7 +207,7 @@ namespace QuestEyes_Server
             }
             if (messageText.Contains("EXCESSIVE_FRAME_FAILURE"))
             {
-                SupportFunctions.outConn("ERROR: Device reported excessive frame failure, disconnecting...");
+                SupportFunctions.outConsole("ERROR: Device reported excessive frame failure, disconnecting...");
                 heartbeatTimer.Stop();
                 heartbeatTimer.Close();
                
@@ -209,7 +215,7 @@ namespace QuestEyes_Server
             }
             if (messageText.Contains("OTA_MODE_ACTIVE"))
             {
-                SupportFunctions.outConn("Device has entered OTA mode.");
+                SupportFunctions.outConsole("Device has entered OTA mode.");
                 Main.connectionStatus.Invoke((MethodInvoker)delegate
                 {
                     Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
@@ -219,7 +225,7 @@ namespace QuestEyes_Server
             }
             else
             {
-                SupportFunctions.outConn("Invalid command received from device: " + messageText);
+                SupportFunctions.outConsole("Invalid command received from device: " + messageText);
                 return;
             }
         }
