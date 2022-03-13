@@ -1,7 +1,13 @@
 name: Build Web App
  
-on: [push]
- 
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
 jobs:
   build:
  
@@ -10,6 +16,11 @@ jobs:
         targetplatform: [x86, x64]
         
     runs-on: windows-latest
+ 
+    env:
+      Solution_Path: QuestEyes-Server.sln
+      Wpf_Project_Path: QuestEyes-Server\QuestEyes-Server.csproj
+      Actions_Allow_Unsecure_Commands: true # Allows AddPAth and SetEnv commands
  
     steps:
     - uses: actions/checkout@v1
@@ -22,13 +33,11 @@ jobs:
       uses: microsoft/setup-msbuild@v1.0.0
  
     - name: Build App
-      run: msbuild QuestEyes-Server\QuestEyes-Server.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
+      run: msbuild $env:Wpf_Project_Path -t:rebuild -verbosity:diag -property:Configuration=Release
       env:
-        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         Configuration: Debug
         RuntimeIdentifier: win-${{ matrix.targetplatform }}
        
- 
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
       with:
