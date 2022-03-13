@@ -32,6 +32,12 @@ jobs:
     - name: Setup MSBuild.exe
       uses: microsoft/setup-msbuild@v1.0.0
  
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v1.0.2
+     
+    - name: Restore NuGet Packages
+      run: nuget restore $env:Solution_Path
+ 
     - name: Build App
       run: msbuild $env:Wpf_Project_Path -t:rebuild -verbosity:diag -property:Configuration=Release
       env:
