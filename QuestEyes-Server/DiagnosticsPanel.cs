@@ -5,51 +5,62 @@ namespace QuestEyes_Server
 {
     public partial class DiagnosticsPanel : Form
     {
-        public static bool diagnosticsOpen;
-        public static PictureBox truePicture;
-        public static PictureBox rightPicture;
-        public static PictureBox leftPicture;
-        public static Label decodeError;
-        public static int cannyThreshold;
-        public static int circleAccThreshold;
-        public static int minRad;
-        public static int maxRad;
-        public static int blur;
+        private static bool diagnosticsOpen;
+        private static PictureBox truePicture;
+        private static PictureBox rightPicture;
+        private static PictureBox leftPicture;
+        private static Label decodeError;
+        private static int cannyThreshold;
+        private static int circleAccThreshold;
+        private static int minRad;
+        private static int maxRad;
+        private static int blur;
+
+        public static bool DiagnosticsOpen { get => diagnosticsOpen; set => diagnosticsOpen = value; }
+        public static PictureBox TruePicture { get => truePicture; set => truePicture = value; }
+        public static PictureBox RightPicture { get => rightPicture; set => rightPicture = value; }
+        public static PictureBox LeftPicture { get => leftPicture; set => leftPicture = value; }
+        public static Label DecodeError { get => decodeError; set => decodeError = value; }
+        public static int CannyThreshold { get => cannyThreshold; set => cannyThreshold = value; }
+        public static int CircleAccThreshold { get => circleAccThreshold; set => circleAccThreshold = value; }
+        public static int MinRad { get => minRad; set => minRad = value; }
+        public static int MaxRad { get => maxRad; set => maxRad = value; }
+        public static int Blur { get => blur; set => blur = value; }
 
         public DiagnosticsPanel()
         {
             InitializeComponent();
-            cannyThreshold = 100;
-            circleAccThreshold = 65;
-            minRad = 1;
-            maxRad = 100;
-            blur = 1;
-            truePicture = truepic;
-            rightPicture = rightImage;
-            leftPicture = leftImage;
-            decodeError = decodeErrorMessage;
+            CannyThreshold = 100;
+            CircleAccThreshold = 65;
+            MinRad = 1;
+            MaxRad = 100;
+            Blur = 1;
+            TruePicture = truepic;
+            RightPicture = rightImage;
+            LeftPicture = leftImage;
+            DecodeError = decodeErrorMessage;
         }
 
         private void Diagnostics_Load(object sender, System.EventArgs e)
         {
-            diagnosticsOpen = true;
+            DiagnosticsOpen = true;
         }
 
         private void Diagnostics_FormClosing(object sender, FormClosingEventArgs e)
         {
-            diagnosticsOpen = false;
-            decodeError.Visible = true;
+            DiagnosticsOpen = false;
+            DecodeError.Visible = true;
         }
 
         private void textBox1_TextChanged(object sender, System.EventArgs e)
         {
             if (textBox1.Text == "" || Int32.Parse(textBox1.Text) < 1)
             {
-                cannyThreshold = 1;
+                CannyThreshold = 1;
             }
             else
             {
-                cannyThreshold = Int32.Parse(textBox1.Text);
+                CannyThreshold = Int32.Parse(textBox1.Text);
             }
             
         }
@@ -58,11 +69,11 @@ namespace QuestEyes_Server
         {
             if (textBox2.Text == "" || Int32.Parse(textBox2.Text) < 1)
             {
-                circleAccThreshold = 1;
+                CircleAccThreshold = 1;
             }
             else
             {
-                circleAccThreshold = Int32.Parse(textBox2.Text);
+                CircleAccThreshold = Int32.Parse(textBox2.Text);
             }
         }
 
@@ -70,11 +81,11 @@ namespace QuestEyes_Server
         {
             if (textBox3.Text == "" || Int32.Parse(textBox3.Text) < 1)
             {
-                maxRad = 1;
+                MaxRad = 1;
             }
             else
             {
-                maxRad = Int32.Parse(textBox3.Text);
+                MaxRad = Int32.Parse(textBox3.Text);
             }
         }
 
@@ -82,11 +93,11 @@ namespace QuestEyes_Server
         {
             if (textBox4.Text == "" || Int32.Parse(textBox4.Text) < 1)
             {
-                minRad = 1;
+                MinRad = 1;
             }
             else
             {
-                minRad = Int32.Parse(textBox4.Text);
+                MinRad = Int32.Parse(textBox4.Text);
             }
         }
 
@@ -94,11 +105,11 @@ namespace QuestEyes_Server
         {
             if (textBox5.Text == "" || Int32.Parse(textBox5.Text) < 1)
             {
-                blur = 1;
+                Blur = 1;
             }
             else
             {
-                blur = Int32.Parse(textBox5.Text);
+                Blur = Int32.Parse(textBox5.Text);
             }
         }
     }

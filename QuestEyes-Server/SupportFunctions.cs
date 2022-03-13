@@ -8,17 +8,17 @@ namespace QuestEyes_Server
     {
         public static void outConsole(string msg)
         {
-            Main.console.Invoke((MethodInvoker)delegate
+            Main.Console.Invoke((MethodInvoker)delegate
             {
-                if (!string.IsNullOrWhiteSpace(Main.console.Text))
+                if (!string.IsNullOrWhiteSpace(Main.Console.Text))
                 {
-                    Main.console.AppendText("\r\n" + msg);
+                    Main.Console.AppendText("\r\n" + msg);
                 }
                 else
                 {
-                    Main.console.AppendText(msg);
+                    Main.Console.AppendText(msg);
                 }
-                Main.console.ScrollToCaret();
+                Main.Console.ScrollToCaret();
             });
         }
 
@@ -28,13 +28,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    DiagnosticsPanel.truePicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.TruePicture.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.truePicture.Image = truePic;
+                        DiagnosticsPanel.TruePicture.Image = truePic;
                     });
-                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.DecodeError.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.decodeError.Visible = false;
+                        DiagnosticsPanel.DecodeError.Visible = false;
                     });
                 }
                 catch
@@ -50,13 +50,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    DiagnosticsPanel.leftPicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.LeftPicture.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.leftPicture.Image = left;
+                        DiagnosticsPanel.LeftPicture.Image = left;
                     });
-                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.DecodeError.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.decodeError.Visible = false;
+                        DiagnosticsPanel.DecodeError.Visible = false;
                     });
                 }
                 catch
@@ -72,13 +72,13 @@ namespace QuestEyes_Server
             { //decode the binary and display the image in diagnostics
                 try
                 {
-                    DiagnosticsPanel.rightPicture.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.RightPicture.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.rightPicture.Image = right;
+                        DiagnosticsPanel.RightPicture.Image = right;
                     });
-                    DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
+                    DiagnosticsPanel.DecodeError.Invoke((MethodInvoker)delegate
                     {
-                        DiagnosticsPanel.decodeError.Visible = false;
+                        DiagnosticsPanel.DecodeError.Visible = false;
                     });
                 }
                 catch

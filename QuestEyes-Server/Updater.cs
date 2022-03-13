@@ -6,29 +6,36 @@ namespace QuestEyes_Server
 {
     public partial class Updater : Form
     {
-        public static bool updaterOpen;
-        public static ProgressBar firmwareProgressBar;
-        public static ProgressBar softwareProgressBar;
-        public static Label firmwareStatusLabel;
-        public static Label softwareStatusLabel;
-        public static Button closeButton;
+        private static bool updaterOpen;
+        private static ProgressBar firmwareProgressBar;
+        private static ProgressBar softwareProgressBar;
+        private static Label firmwareStatusLabel;
+        private static Label softwareStatusLabel;
+        private static Button closeButton;
+
+        public static bool UpdaterOpen { get => updaterOpen; set => updaterOpen = value; }
+        public static ProgressBar FirmwareProgressBar { get => firmwareProgressBar; set => firmwareProgressBar = value; }
+        public static ProgressBar SoftwareProgressBar { get => softwareProgressBar; set => softwareProgressBar = value; }
+        public static Label FirmwareStatusLabel { get => firmwareStatusLabel; set => firmwareStatusLabel = value; }
+        public static Label SoftwareStatusLabel { get => softwareStatusLabel; set => softwareStatusLabel = value; }
+        public static Button CloseButton { get => closeButton; set => closeButton = value; }
 
         public Updater()
         {
             InitializeComponent();
-            firmwareProgressBar = firmwareUpdateProgressBar;
-            softwareProgressBar = softwareUpdateProgressBar;
-            firmwareStatusLabel = firmwareUpdateStageLabel;
-            softwareStatusLabel = softwareUpdateStageLabel;
-            closeButton = updateClose;
+            FirmwareProgressBar = firmwareUpdateProgressBar;
+            SoftwareProgressBar = softwareUpdateProgressBar;
+            FirmwareStatusLabel = firmwareUpdateStageLabel;
+            SoftwareStatusLabel = softwareUpdateStageLabel;
+            CloseButton = updateClose;
         }
 
         private void Updater_Load(object sender, EventArgs e)
         {
-            updaterOpen = true;
-            Main.reconnectButton.Invoke((MethodInvoker)delegate
+            UpdaterOpen = true;
+            Main.ReconnectButton.Invoke((MethodInvoker)delegate
             {
-                Main.reconnectButton.Enabled = false;
+                Main.ReconnectButton.Enabled = false;
             });
         }
 
@@ -39,10 +46,10 @@ namespace QuestEyes_Server
 
         private void Updater_FormClosing(object sender, FormClosingEventArgs e)
         {
-            updaterOpen = false;
-            Main.reconnectButton.Invoke((MethodInvoker)delegate
+            UpdaterOpen = false;
+            Main.ReconnectButton.Invoke((MethodInvoker)delegate
             {
-                Main.reconnectButton.Enabled = true;
+                Main.ReconnectButton.Enabled = true;
             });
         }
 
@@ -50,20 +57,19 @@ namespace QuestEyes_Server
         {
             SupportFunctions.outConsole("Connecting to server to check for updates...");
             //check if updates are available at cdn.stevenwheeler.co.uk
-            using (var webClient = new WebClient())
+            using var webClient = new WebClient();
+            //check for FIRMWARE UPDATE (/QuestEyes/Firmware)
+            (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = Updater_Firmware.checkForUpdate(webClient);
+            if (firmwareUpdateAvailable)
             {
-                //check for FIRMWARE UPDATE (/QuestEyes/Firmware)
-                (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = Updater_Firmware.checkForUpdate(webClient);
-                if (firmwareUpdateAvailable) {
-                    await Updater_Firmware.beginUpdateProceedure(firmwareVersion, firmwareChanges);
-                }
+                await Updater_Firmware.beginUpdateProceedure(firmwareVersion, firmwareChanges);
+            }
 
-                //check for SOFTWARE UPDATE (/QuestEyes/Software)
-                (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = Updater_Software.checkForUpdate(webClient);
-                if (softwareUpdateAvailable)
-                {
-                    Updater_Software.beginUpdateProceedure(softwareVersion, softwareChanges);
-                }
+            //check for SOFTWARE UPDATE (/QuestEyes/Software)
+            (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = Updater_Software.checkForUpdate(webClient);
+            if (softwareUpdateAvailable)
+            {
+                Updater_Software.beginUpdateProceedure(softwareVersion, softwareChanges);
             }
         }
     }

@@ -33,10 +33,10 @@ namespace QuestEyes_Server
 
     class VRCHAT_OSC
     {
-        private static Socket VRCSender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private static Socket VRCReceiver = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
-        private static Thread receiveVRCBackground;
-        private static CancellationToken VRCCancellationToken;
+        private static readonly Socket VRCSender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        private static readonly Socket VRCReceiver = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        private static readonly Thread receiveVRCBackground;
+        private static readonly CancellationToken VRCCancellationToken;
 
         public static void InitVRCConnection()
         {
@@ -55,7 +55,7 @@ namespace QuestEyes_Server
 
         }
 
-        public void SendVRC(byte[] data)
+        public static void SendVRC(byte[] data)
         {
             VRCSender.Send(data, data.Length, SocketFlags.None);
         }
@@ -63,13 +63,13 @@ namespace QuestEyes_Server
 
     class CUSTOM_OSC
     {
-        private static Socket CustomSender = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
+        private static readonly Socket CustomSender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
         public static void InitCustomConnection(int sendPort)
         {
         }
 
-        public void SendCustom(byte[] data)
+        public static void SendCustom(byte[] data)
         {
             //check if the port has changed since last send
 

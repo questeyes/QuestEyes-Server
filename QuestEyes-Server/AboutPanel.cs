@@ -5,7 +5,9 @@ namespace QuestEyes_Server
 {
     public partial class AboutPanel : Form
     {
-        public static bool aboutOpen;
+        private static bool aboutOpen;
+
+        public static bool AboutOpen { get => aboutOpen; set => aboutOpen = value; }
 
         public AboutPanel()
         {
@@ -14,12 +16,12 @@ namespace QuestEyes_Server
 
         private void About_Load(object sender, EventArgs e)
         {
-            aboutOpen = true;
+            AboutOpen = true;
         }
 
         private void About_FormClosing(object sender, FormClosingEventArgs e)
         {
-            aboutOpen = false;
+            AboutOpen = false;
         }
     }
 }

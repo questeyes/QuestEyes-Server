@@ -1,16 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net5.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-
     <RootNamespace>QuestEyes_Server</RootNamespace>
     <AssemblyName>QuestEyes</AssemblyName>
     <StartupObject>QuestEyes_Server.Program</StartupObject>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>QuestEyes-Server-Signing.pfx</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <ApplicationIcon />
   </PropertyGroup>
-
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="OpenCvSharp4">
       <Version>4.5.5.20211231</Version>
@@ -23,24 +30,24 @@
     </PackageReference>
     <PackageReference Include="System.Net.WebSockets" Version="4.3.0" />
     <PackageReference Include="System.Reactive">
-      <Version>4.3.2</Version>
+      <Version>5.0.0</Version>
     </PackageReference>
     <PackageReference Include="System.Threading.Channels">
-      <Version>4.7.0</Version>
+      <Version>6.0.0</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="6.0.0" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Properties\Settings.settings">
-    <Generator>SettingsSingleFileGenerator</Generator>
-    <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <Compile Update="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-   </ItemGroup>
-
+  </ItemGroup>
   <ItemGroup>
     <Compile Update="AboutPanel.cs" />
     <Compile Update="AboutPanel.Designer.cs">
@@ -99,6 +106,4 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
   </ItemGroup>
-
 </Project>
-    

@@ -7,7 +7,9 @@ namespace QuestEyes_Server
     public partial class OSCControlPanel : Form
     {
 
-        public static bool oscOpen;
+        private static bool oscOpen;
+
+        public static bool OscOpen { get => oscOpen; set => oscOpen = value; }
 
         public OSCControlPanel()
         {
@@ -16,7 +18,7 @@ namespace QuestEyes_Server
 
         private void OSCControl_Load(object sender, EventArgs e)
         {
-            oscOpen = true;
+            OscOpen = true;
             //check the saved states of the OSC control
             foreach (var setting in OSC_SoftwareControlSystem.OSCSettings.ToList())
             {
@@ -43,7 +45,7 @@ namespace QuestEyes_Server
 
         private void OSCControl_FormClosing(object sender, FormClosingEventArgs e)
         {
-            oscOpen = false;
+            OscOpen = false;
         }
 
         private void vrcCheckBox_CheckedChanged(object sender, EventArgs e)

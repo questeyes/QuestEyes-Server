@@ -8,23 +8,31 @@ namespace QuestEyes_Server
     {
         public static readonly string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
 
-        public static DiagnosticsPanel diagnosticsWindow;
-        public static Label connectionStatus;
-        public static Label batteryStatus;
-        public static Label firmwareVersion;
-        public static Button reconnectButton;
-        public static Button updateButton;
-        public static RichTextBox console;
+        private static DiagnosticsPanel diagnosticsWindow;
+        private static Label connectionStatus;
+        private static Label batteryStatus;
+        private static Label firmwareVersion;
+        private static Button reconnectButton;
+        private static Button updateButton;
+        private static RichTextBox console;
+
+        public static DiagnosticsPanel DiagnosticsWindow { get => diagnosticsWindow; set => diagnosticsWindow = value; }
+        public static Label ConnectionStatus { get => connectionStatus; set => connectionStatus = value; }
+        public static Label BatteryStatus { get => batteryStatus; set => batteryStatus = value; }
+        public static Label FirmwareVersion { get => firmwareVersion; set => firmwareVersion = value; }
+        public static Button ReconnectButton { get => reconnectButton; set => reconnectButton = value; }
+        public static Button UpdateButton { get => updateButton; set => updateButton = value; }
+        public static RichTextBox Console { get => console; set => console = value; }
 
         public Main()
         {
             InitializeComponent();
-            connectionStatus = conStat;
-            batteryStatus = batPercentage;
-            firmwareVersion = firmwareVer;
-            reconnectButton = forceReconnect;
-            updateButton = checkFirmUpdate;
-            console = consoleBox;
+            ConnectionStatus = conStat;
+            BatteryStatus = batPercentage;
+            FirmwareVersion = firmwareVer;
+            ReconnectButton = forceReconnect;
+            UpdateButton = checkFirmUpdate;
+            Console = consoleBox;
         }
 
         private void Main_Load(object sender, EventArgs e)
@@ -47,18 +55,18 @@ namespace QuestEyes_Server
 
         private void diagnostics_Click(object sender, EventArgs e)
         {
-            if (!DiagnosticsPanel.diagnosticsOpen)
+            if (!DiagnosticsPanel.DiagnosticsOpen)
             {
-                DiagnosticsPanel diagnosticsWindow = new DiagnosticsPanel();
+                DiagnosticsPanel diagnosticsWindow = new();
                 diagnosticsWindow.Show();
             }
         }
 
         private void infoButton_Click(object sender, EventArgs e)
         {
-            if (!AboutPanel.aboutOpen)
+            if (!AboutPanel.AboutOpen)
             {
-                AboutPanel aboutWindow = new AboutPanel();
+                AboutPanel aboutWindow = new();
                 aboutWindow.Show();
             }
         }
@@ -76,9 +84,9 @@ namespace QuestEyes_Server
 
         private void checkFirmUpdate_Click(object sender, EventArgs e)
         {
-            if (!Updater.updaterOpen)
+            if (!Updater.UpdaterOpen)
             {
-                Updater updater = new Updater();
+                Updater updater = new();
                 updater.Show();
             }
         }
@@ -90,9 +98,9 @@ namespace QuestEyes_Server
 
         private void oscButton_Click(object sender, EventArgs e)
         {
-            if (!OSCControlPanel.oscOpen)
+            if (!OSCControlPanel.OscOpen)
             {
-                OSCControlPanel oscControl = new OSCControlPanel();
+                OSCControlPanel oscControl = new();
                 oscControl.Show();
             }
         }

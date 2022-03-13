@@ -19,13 +19,13 @@ namespace QuestEyes_Server
             }
             catch
             {
-                Updater.firmwareProgressBar.Value = 100;
-                Updater.firmwareStatusLabel.Text = "Could not check for firmware update.";
+                Updater.FirmwareProgressBar.Value = 100;
+                Updater.FirmwareStatusLabel.Text = "Could not check for firmware update.";
                 SupportFunctions.outConsole("Could not check for firmware update.");
                 return Tuple.Create(false, "null", "null");
             }
 
-            Updater.firmwareProgressBar.Value = 20;
+            Updater.FirmwareProgressBar.Value = 20;
             char[] delims = new[] { '\r', '\n' };
             versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
@@ -38,8 +38,8 @@ namespace QuestEyes_Server
             }
             else
             {
-                Updater.firmwareProgressBar.Value = 100;
-                Updater.firmwareStatusLabel.Text = "Device is up to date.";
+                Updater.FirmwareProgressBar.Value = 100;
+                Updater.FirmwareStatusLabel.Text = "Device is up to date.";
                 SupportFunctions.outConsole("No new firmware updates are available.");
                 return Tuple.Create(false, "null", "null");
             }
@@ -54,7 +54,7 @@ namespace QuestEyes_Server
             {
                 SupportFunctions.outConsole("Firmware update accepted by user.");
                 //put device in OTA mode
-                Updater.firmwareStatusLabel.Text = "Preparing device for update...";
+                Updater.FirmwareStatusLabel.Text = "Preparing device for update...";
                 putDeviceInOTAMode();
 
                 //wait here and confirm in ota mode
@@ -64,7 +64,7 @@ namespace QuestEyes_Server
                 using (var webClient = new WebClient())
                 {
                     SupportFunctions.outConsole("Downloading OTA firmware file...");
-                    Updater.firmwareStatusLabel.Text = "Downloading firmware update...";
+                    Updater.FirmwareStatusLabel.Text = "Downloading firmware update...";
                     Directory.CreateDirectory(Main.storageFolder);
                     try
                     {
@@ -72,16 +72,16 @@ namespace QuestEyes_Server
                     }
                     catch
                     {
-                        Updater.firmwareProgressBar.Value = 100;
-                        Updater.firmwareStatusLabel.Text = "Could not download firmware update.";
+                        Updater.FirmwareProgressBar.Value = 100;
+                        Updater.FirmwareStatusLabel.Text = "Could not download firmware update.";
                         SupportFunctions.outConsole("Could not download firmware update from server.");
                         return;
                     }
                     SupportFunctions.outConsole("Firmware update downloaded.");
-                    Updater.firmwareProgressBar.Value = 40;
+                    Updater.FirmwareProgressBar.Value = 40;
                 }
                 SupportFunctions.outConsole("Verifying downloaded firmware file...");
-                Updater.firmwareStatusLabel.Text = "Verifying downloaded firmware update file...";
+                Updater.FirmwareStatusLabel.Text = "Verifying downloaded firmware update file...";
                 //verify the file here
 
 
@@ -89,14 +89,14 @@ namespace QuestEyes_Server
 
 
 
-                Updater.firmwareProgressBar.Value = 60;
+                Updater.FirmwareProgressBar.Value = 60;
 
                 if (InterdeviceNetworkingFramework.DeviceMode == "OTA")
                 {
                     //process the update on the ESP
                     await Task.Run(() =>
                     {
-                        performRemoteUpdate();
+                        _ = performRemoteUpdateAsync();
                     });
                 }
                 else
@@ -105,16 +105,16 @@ namespace QuestEyes_Server
                     DialogResult otaModeError = MessageBox.Show(
                     "Could not put device in OTA mode.\nPlease reboot device and try again.",
                     "OTA Mode error", MessageBoxButtons.OK);
-                    Updater.firmwareProgressBar.Value = 100;
-                    Updater.firmwareStatusLabel.Text = "Update cancelled";
-                    Updater.closeButton.Enabled = true;
+                    Updater.FirmwareProgressBar.Value = 100;
+                    Updater.FirmwareStatusLabel.Text = "Update cancelled";
+                    Updater.CloseButton.Enabled = true;
                 }
             }
             else if (updatePrompt == DialogResult.No)
             {
                 SupportFunctions.outConsole("Firmware update was rejected by user.");
-                Updater.firmwareProgressBar.Value = 100;
-                Updater.firmwareStatusLabel.Text = "Firmware update cancelled.";
+                Updater.FirmwareProgressBar.Value = 100;
+                Updater.FirmwareStatusLabel.Text = "Firmware update cancelled.";
             }
         }
 
@@ -125,32 +125,35 @@ namespace QuestEyes_Server
 
         private static void putDeviceInOTAMode()
         {
-            Updater.closeButton.Enabled = false;
+            Updater.CloseButton.Enabled = false;
             SupportFunctions.outConsole("Beginning OTA update of connected device...");
             SupportFunctions.outConsole("Putting device into OTA mode...");
             _ = InterdeviceNetworkingFramework.Send(InterdeviceNetworkingFramework.communicationSocket, "OTA_MODE");
         }
 
-        private static void performRemoteUpdate()
+        private static async Task performRemoteUpdateAsync()
         {
             SupportFunctions.outConsole("Transferring firmware update file to device...");
-            Updater.firmwareStatusLabel.Invoke((MethodInvoker)delegate
+            Updater.FirmwareStatusLabel.Invoke((MethodInvoker)delegate
             {
-                Updater.firmwareStatusLabel.Text = "Transferring to device...";
+                Updater.FirmwareStatusLabel.Text = "Transferring to device...";
             });
+
             byte[] filebuffer = File.ReadAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConsole("File length: " + filebuffer.Length);
-            _ = InterdeviceNetworkingFramework.SendData(InterdeviceNetworkingFramework.communicationSocket, filebuffer);
+
+            await InterdeviceNetworkingFramework.SendData(InterdeviceNetworkingFramework.communicationSocket, filebuffer);
             SupportFunctions.outConsole("File transferred.");
+            
             //delete the file off the PC as its no longer required
             File.Delete(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConsole("Cleaned up unnecessary files.");
             //device will take care of the rest and send websocket commands with progress
             SupportFunctions.outConsole("Device is installing update...");
-            Updater.firmwareStatusLabel.Invoke((MethodInvoker)delegate
+            Updater.FirmwareStatusLabel.Invoke((MethodInvoker)delegate
             {
-                Updater.firmwareProgressBar.Value = 80;
-                Updater.firmwareStatusLabel.Text = "Installing firmware update...";
+                Updater.FirmwareProgressBar.Value = 80;
+                Updater.FirmwareStatusLabel.Text = "Installing firmware update...";
             });
 
 

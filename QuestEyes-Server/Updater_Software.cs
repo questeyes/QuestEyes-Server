@@ -12,20 +12,20 @@ namespace QuestEyes_Server
 
         public static Tuple<bool, string, string> checkForUpdate(WebClient webClient)
         {
-            Updater.softwareStatusLabel.Text = "Checking for software updates...";
+            Updater.SoftwareStatusLabel.Text = "Checking for software updates...";
             try
             {
                 downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/info");
             }
             catch
             {
-                Updater.softwareProgressBar.Value = 100;
-                Updater.softwareStatusLabel.Text = "Could not check for software update.";
+                Updater.SoftwareProgressBar.Value = 100;
+                Updater.SoftwareStatusLabel.Text = "Could not check for software update.";
                 SupportFunctions.outConsole("Could not check for software update.");
                 return Tuple.Create(false, "null", "null");
             }
 
-            Updater.softwareProgressBar.Value = 25;
+            Updater.SoftwareProgressBar.Value = 25;
             char[] delims = new[] { '\r', '\n' };
             versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
@@ -38,8 +38,8 @@ namespace QuestEyes_Server
             }
             else
             {
-                Updater.softwareProgressBar.Value = 100;
-                Updater.softwareStatusLabel.Text = "Software is up to date.";
+                Updater.SoftwareProgressBar.Value = 100;
+                Updater.SoftwareStatusLabel.Text = "Software is up to date.";
                 SupportFunctions.outConsole("No new software updates are available.");
                 return Tuple.Create(false, "null", "null");
             }
@@ -58,7 +58,7 @@ namespace QuestEyes_Server
                 using (var webClient = new WebClient())
                 {
                     SupportFunctions.outConsole("Downloading software update file...");
-                    Updater.softwareStatusLabel.Text = "Downloading software update...";
+                    Updater.SoftwareStatusLabel.Text = "Downloading software update...";
                     Directory.CreateDirectory(Main.storageFolder);
                     try
                     {
@@ -66,16 +66,16 @@ namespace QuestEyes_Server
                     }
                     catch
                     {
-                        Updater.softwareProgressBar.Value = 100;
-                        Updater.softwareStatusLabel.Text = "Could not download software update.";
+                        Updater.SoftwareProgressBar.Value = 100;
+                        Updater.SoftwareStatusLabel.Text = "Could not download software update.";
                         SupportFunctions.outConsole("Could not download software update from server.");
                         return;
                     }
                     SupportFunctions.outConsole("File downloaded.");
-                    Updater.softwareProgressBar.Value = 50;
+                    Updater.SoftwareProgressBar.Value = 50;
                 }
                 SupportFunctions.outConsole("Verifying downloaded software update file...");
-                Updater.softwareStatusLabel.Text = "Verifying downloaded software update file...";
+                Updater.SoftwareStatusLabel.Text = "Verifying downloaded software update file...";
                 //verify the file here
 
 
@@ -83,7 +83,7 @@ namespace QuestEyes_Server
                 //TODO: VERIFY
 
 
-                Updater.softwareProgressBar.Value = 75;
+                Updater.SoftwareProgressBar.Value = 75;
 
 
                 //TODO: UPDATE SOFTWARE HERE
@@ -92,8 +92,8 @@ namespace QuestEyes_Server
             else if (updatePrompt == DialogResult.No)
             {
                 SupportFunctions.outConsole("Software update was rejected by user.");
-                Updater.softwareProgressBar.Value = 100;
-                Updater.softwareStatusLabel.Text = "Software update cancelled";
+                Updater.SoftwareProgressBar.Value = 100;
+                Updater.SoftwareStatusLabel.Text = "Software update cancelled";
             }
         }
     }

@@ -25,8 +25,8 @@ namespace QuestEyes_Server
             int left_X = 0, left_Y = 0;
 
             //turn the byte stream into a bitmap image
-            MemoryStream stream = new MemoryStream(data);
-            Bitmap bitmap = new Bitmap(stream);
+            MemoryStream stream = new(data);
+            Bitmap bitmap = new(stream);
 
             //create the main material
             var main = new Mat();
@@ -44,7 +44,7 @@ namespace QuestEyes_Server
             {
                 Cv2.EqualizeHist(main, main);
                 //Cv2.Erode(main, main, 1);
-                Cv2.MedianBlur(main, main, DiagnosticsPanel.blur);
+                Cv2.MedianBlur(main, main, DiagnosticsPanel.Blur);
             }
             catch { }
 
@@ -108,7 +108,7 @@ namespace QuestEyes_Server
                     foreach (CircleSegment circle in circles)
                         Cv2.Circle(left, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
 
-                    if (DiagnosticsPanel.diagnosticsOpen)
+                    if (DiagnosticsPanel.DiagnosticsOpen)
                     {
                         //convert to bitmap and send to diagnostics panel
                         Bitmap left_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(left);
@@ -159,7 +159,7 @@ namespace QuestEyes_Server
                         Cv2.Circle(right, (OpenCvSharp.Point)circle.Center, (int)circle.Radius, new Scalar(128, 0, 128), 2);**/
 
 
-                    if (DiagnosticsPanel.diagnosticsOpen)
+                    if (DiagnosticsPanel.DiagnosticsOpen)
                     {
                         //convert to bitmap and send to diagnostics panel
                         Bitmap right_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(right);
@@ -168,7 +168,7 @@ namespace QuestEyes_Server
                 }
             }
 
-            if (DiagnosticsPanel.diagnosticsOpen)
+            if (DiagnosticsPanel.DiagnosticsOpen)
             {
                 //convert to bitmap and send to diagnostics panel
                 Bitmap result_bitmap = OpenCvSharp.Extensions.BitmapConverter.ToBitmap(main);

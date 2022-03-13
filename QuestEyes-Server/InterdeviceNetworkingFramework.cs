@@ -28,7 +28,7 @@ namespace QuestEyes_Server
         public static System.Timers.Timer connectionTimeoutTimer;
 
         public static string packet = null;
-        public static string[] packetInfo = new string[0];
+        public static string[] packetInfo = Array.Empty<string>();
 
         private static string DeviceIP;
         public static string DeviceName;
@@ -44,13 +44,13 @@ namespace QuestEyes_Server
                     while (!connected && !attemptingConnect)
                     {
                         SupportFunctions.outConsole("Searching for device...");
-                        Main.reconnectButton.Invoke((MethodInvoker)delegate
+                        Main.ReconnectButton.Invoke((MethodInvoker)delegate
                         {
-                            Main.reconnectButton.Enabled = false;
-                            Main.updateButton.Enabled = false;
+                            Main.ReconnectButton.Enabled = false;
+                            Main.UpdateButton.Enabled = false;
                         });
                         packet = null;
-                        packetInfo = new string[0];
+                        packetInfo = Array.Empty<string>();
                         discoverPort = new UdpClient(7579);
                         var receivedResults = await discoverPort.ReceiveAsync();
                         packet += Encoding.ASCII.GetString(receivedResults.Buffer);
@@ -74,10 +74,10 @@ namespace QuestEyes_Server
 
         public static async Task ConnectAsync(string url)
         {
-            Main.connectionStatus.Invoke((MethodInvoker)delegate
+            Main.ConnectionStatus.Invoke((MethodInvoker)delegate
             {
-                Main.connectionStatus.Text = "Connecting...";
-                Main.connectionStatus.ForeColor = Color.DarkOrange;
+                Main.ConnectionStatus.Text = "Connecting...";
+                Main.ConnectionStatus.ForeColor = Color.DarkOrange;
             });
 
             connectionTimeoutTimer = new System.Timers.Timer(10000);
@@ -124,35 +124,33 @@ namespace QuestEyes_Server
             do
             {
                 WebSocketReceiveResult result;
-                using (var ms = new MemoryStream())
+                using var ms = new MemoryStream();
+                do
                 {
-                    do
-                    {
-                        result = await socket.ReceiveAsync(buffer, CancellationToken.None);
-                        ms.Write(buffer.Array, buffer.Offset, result.Count);
-                    } while (!result.EndOfMessage);
+                    result = await socket.ReceiveAsync(buffer, CancellationToken.None);
+                    ms.Write(buffer.Array, buffer.Offset, result.Count);
+                } while (!result.EndOfMessage);
 
-                    if (result.MessageType == WebSocketMessageType.Close)
-                    {
-                        //websocket is closed
-                        await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Websocket Closed", CancellationToken.None);
-                        socket.Dispose();
-                        return;
-                    }
+                if (result.MessageType == WebSocketMessageType.Close)
+                {
+                    //websocket is closed
+                    await socket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Websocket Closed", CancellationToken.None);
+                    socket.Dispose();
+                    return;
+                }
 
-                    else if (result.MessageType == WebSocketMessageType.Text)
-                    {
-                        //message is a text message
-                        await TextReceiveAsync(socket, ms);
-                        return;
-                    }
+                else if (result.MessageType == WebSocketMessageType.Text)
+                {
+                    //message is a text message
+                    await TextReceiveAsync(ms);
+                    return;
+                }
 
-                    else if (result.MessageType == WebSocketMessageType.Binary)
-                    {
-                        //message is binary
-                        BinaryReceive(ms);
-                        return;
-                    }
+                else if (result.MessageType == WebSocketMessageType.Binary)
+                {
+                    //message is binary
+                    BinaryReceive(ms);
+                    return;
                 }
             } while (true);
         }
@@ -166,7 +164,7 @@ namespace QuestEyes_Server
             CloseCommunicationSocket(communicationSocket);
         }
 
-        private static async Task TextReceiveAsync(WebSocket socket, MemoryStream ms)
+        private static async Task TextReceiveAsync(MemoryStream ms)
         {
             //IF NAME, TREAT AS DEVICE NAME
             //IF FIRMWARE_VER, TREAT AS FIRMWARE VERSION
@@ -190,16 +188,16 @@ namespace QuestEyes_Server
                 heartbeatTimer.Elapsed += OnHeartbeatFailure;
                 heartbeatTimer.AutoReset = true;
                 heartbeatTimer.Enabled = true;
-                Main.reconnectButton.Invoke((MethodInvoker)delegate
+                Main.ReconnectButton.Invoke((MethodInvoker)delegate
                 {
-                    Main.reconnectButton.Enabled = true;
-                    Main.updateButton.Enabled = true;
+                    Main.ReconnectButton.Enabled = true;
+                    Main.UpdateButton.Enabled = true;
                 });
                 string[] split = messageText.Split(' ');
-                Main.connectionStatus.Invoke((MethodInvoker)delegate
+                Main.ConnectionStatus.Invoke((MethodInvoker)delegate
                 {
-                    Main.connectionStatus.Text = "Connected to " + split[1];
-                    Main.connectionStatus.ForeColor = Color.Green;
+                    Main.ConnectionStatus.Text = "Connected to " + split[1];
+                    Main.ConnectionStatus.ForeColor = Color.Green;
                 });
                 DeviceName = split[1];
                 return;
@@ -207,9 +205,9 @@ namespace QuestEyes_Server
             if (messageText.Contains("FIRMWARE_VER"))
             {
                 string[] split = messageText.Split(' ');
-                Main.firmwareVersion.Invoke((MethodInvoker)delegate
+                Main.FirmwareVersion.Invoke((MethodInvoker)delegate
                 {
-                    Main.firmwareVersion.Text = "Device firmware version: " + split[1];
+                    Main.FirmwareVersion.Text = "Device firmware version: " + split[1];
                 });
                 SupportFunctions.outConsole("Device reported firmware version " + split[1]);
                 DeviceFirmware = split[1];
@@ -236,10 +234,10 @@ namespace QuestEyes_Server
             if (messageText.Contains("OTA_MODE_ACTIVE"))
             {
                 SupportFunctions.outConsole("Device has entered OTA mode.");
-                Main.connectionStatus.Invoke((MethodInvoker)delegate
+                Main.ConnectionStatus.Invoke((MethodInvoker)delegate
                 {
-                    Main.connectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
-                    Main.connectionStatus.Text = "Connected in OTA mode";
+                    Main.ConnectionStatus.ForeColor = Color.FromArgb(102, 0, 204);
+                    Main.ConnectionStatus.Text = "Connected in OTA mode";
                 });
                 DeviceMode = "OTA";
             }
@@ -258,25 +256,25 @@ namespace QuestEyes_Server
         public static void CloseCommunicationSocket(WebSocket socket)
         {
             socket.Dispose();
-            Main.connectionStatus.Invoke((MethodInvoker)delegate
+            Main.ConnectionStatus.Invoke((MethodInvoker)delegate
             {
-                Main.connectionStatus.ForeColor = Color.FromArgb(192, 0, 0);
-                Main.connectionStatus.Text = "Searching...";
-                Main.batteryStatus.Text = "Battery percentage: Unknown";
-                Main.firmwareVersion.Text = "Firmware version: Unknown";
+                Main.ConnectionStatus.ForeColor = Color.FromArgb(192, 0, 0);
+                Main.ConnectionStatus.Text = "Searching...";
+                Main.BatteryStatus.Text = "Battery percentage: Unknown";
+                Main.FirmwareVersion.Text = "Firmware version: Unknown";
             });
-            packetInfo = new string[0];
+            packetInfo = Array.Empty<string>();
             packet = null;
             url = null;
 
             connected = false;
             attemptingConnect = false;
 
-            if (DiagnosticsPanel.diagnosticsOpen)
+            if (DiagnosticsPanel.DiagnosticsOpen)
             {
-                DiagnosticsPanel.decodeError.Invoke((MethodInvoker)delegate
+                DiagnosticsPanel.DecodeError.Invoke((MethodInvoker)delegate
                 {
-                    DiagnosticsPanel.decodeError.Visible = true;
+                    DiagnosticsPanel.DecodeError.Visible = true;
                 });
             }
         }
