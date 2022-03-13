@@ -21,7 +21,7 @@ jobs:
       run: nuget restore QuestEyes-Server.sln
  
     - name: Build and Publish Web App
-      run: msbuild QuestEyes-Server.sln /p:Configuration=Release /p:DeployOnBuild=true /p:PublishProfile=FolderProfile
+      run: msbuild QuestEyes-Server\QuestEyes-Server.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
  
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
