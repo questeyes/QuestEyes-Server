@@ -24,8 +24,10 @@ jobs:
     - name: Build App
       run: msbuild QuestEyes-Server\QuestEyes-Server.csproj -t:rebuild -verbosity:diag -property:Configuration=Release
       env:
+        ACTIONS_ALLOW_UNSECURE_COMMANDS: 'true'
         Configuration: Debug
         RuntimeIdentifier: win-${{ matrix.targetplatform }}
+       
  
     - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
