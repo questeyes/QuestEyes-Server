@@ -5,9 +5,9 @@ using OpenCvSharp;
 
 namespace QuestEyes_Server
 {
-    class EyeTrackingFramework
+    public static class EyeTrackingFramework
     {
-        public static CascadeClassifier eyeClassifier;
+        public static CascadeClassifier EyeClassifier { get; set; }
 
         public static void loadEyeClassifierData()
         {
@@ -15,7 +15,7 @@ namespace QuestEyes_Server
             {
                 File.WriteAllText(Main.storageFolder + "\\haarcascade_eye.xml", Properties.Resources.haarcascade_eye);
             }
-            eyeClassifier = new CascadeClassifier(Main.storageFolder + "\\haarcascade_eye.xml");
+            EyeClassifier = new CascadeClassifier(Main.storageFolder + "\\haarcascade_eye.xml");
         }
 
         public static Tuple<int, int, int, int> detectEyes(byte[] data)
@@ -46,10 +46,15 @@ namespace QuestEyes_Server
                 //Cv2.Erode(main, main, 1);
                 Cv2.MedianBlur(main, main, DiagnosticsPanel.Blur);
             }
-            catch { }
+            catch {
+                //todo: add error message here
+
+
+
+            }
 
             //detect the eyes in main
-            Rect[] eyes = eyeClassifier.DetectMultiScale(main, 1.3, 2, HaarDetectionTypes.DoCannyPruning, new OpenCvSharp.Size(30, 50));
+            Rect[] eyes = EyeClassifier.DetectMultiScale(main, 1.3, 2, HaarDetectionTypes.DoCannyPruning, new OpenCvSharp.Size(30, 50));
    
             //find each eye
             foreach (Rect eye in eyes)

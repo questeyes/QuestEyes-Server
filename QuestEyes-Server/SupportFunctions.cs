@@ -4,7 +4,7 @@ using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
-    public partial class SupportFunctions
+    public static class SupportFunctions
     {
         public static void outConsole(string msg)
         {

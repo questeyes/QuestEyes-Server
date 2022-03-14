@@ -11,61 +11,77 @@ using System.IO;
 
 namespace QuestEyes_Server
 {
-    class InterdeviceNetworkingFramework
+    public static class InterdeviceNetworkingFramework
     {
         /** 
          * PORTS:
          *  7579 device discovery port
          *  7580 command/ota/stream socket
         **/
-        public static UdpClient discoverPort;
-        public static ClientWebSocket communicationSocket;
 
-        public static string url = null;
-        public static bool connected = false;
-        public static bool attemptingConnect = false;
-        public static System.Timers.Timer heartbeatTimer;
-        public static System.Timers.Timer connectionTimeoutTimer;
+        //Networking variables
+        public static UdpClient DiscoverPort { get; set; }
+        public static ClientWebSocket CommunicationSocket { get; set; }
 
-        public static string packet = null;
-        public static string[] packetInfo = Array.Empty<string>();
+        public static bool Connected { get; set; }
+        public static bool AttemptingConnection { get; set; }
+        public static string Url { get; set; }
+        public static string Packet { get; set; }
+        public static string[] PacketInfo { get; set; } = Array.Empty<string>();
 
-        private static string DeviceIP;
-        public static string DeviceName;
-        public static string DeviceFirmware;
-        public static string DeviceMode = "NORMAL";
+        //Device info variables
+        public static string DeviceIP { get; set; }
+        public static string DeviceName { get; set; }
+        public static string DeviceFirmware { get; set; }
+        public static string DeviceMode { get; set; } = "NORMAL";
 
-        public static async void Search()
+        //Timers
+        public static System.Timers.Timer HeartbeatTimer { get; set; }
+        public static System.Timers.Timer ConnectionTimeoutTimer { get; set; }
+
+        public static async Task Search()
         {
             await Task.Run(async () =>
             {
                 while (true)
                 {
-                    while (!connected && !attemptingConnect)
+                    while (!Connected && !AttemptingConnection)
                     {
+                        if (HeartbeatTimer != null)
+                        {
+                            HeartbeatTimer.Stop();
+                            HeartbeatTimer.Close();
+                        }
+                        if (ConnectionTimeoutTimer != null)
+                        {
+                            ConnectionTimeoutTimer.Stop();
+                            ConnectionTimeoutTimer.Close();
+                        }
+
                         SupportFunctions.outConsole("Searching for device...");
+                        
                         Main.ReconnectButton.Invoke((MethodInvoker)delegate
                         {
                             Main.ReconnectButton.Enabled = false;
                             Main.UpdateButton.Enabled = false;
                         });
-                        packet = null;
-                        packetInfo = Array.Empty<string>();
-                        discoverPort = new UdpClient(7579);
-                        var receivedResults = await discoverPort.ReceiveAsync();
-                        packet += Encoding.ASCII.GetString(receivedResults.Buffer);
-                        packetInfo = packet.Split(new char[] { ':' });
-                        if (packetInfo[0] == ("QUESTEYE_REQ_CONN"))
+                        Packet = null;
+                        PacketInfo = Array.Empty<string>();
+                        DiscoverPort = new UdpClient(7579);
+                        var receivedResults = await DiscoverPort.ReceiveAsync();
+                        Packet = Encoding.ASCII.GetString(receivedResults.Buffer);
+                        PacketInfo = Packet.Split(new char[] { ':' });
+                        if (PacketInfo[0] == ("QUESTEYE_REQ_CONN"))
                         {
-                            discoverPort.Close();
-                            attemptingConnect = true;
-                            string hostname = packetInfo[1];
-                            DeviceIP = packetInfo[2];
+                            DiscoverPort.Close();
+                            AttemptingConnection = true;
+                            string hostname = PacketInfo[1];
+                            DeviceIP = PacketInfo[2];
                             SupportFunctions.outConsole("Detected " + hostname);
                             SupportFunctions.outConsole("Attempting connection to " + hostname);
-                            url = "ws://" + DeviceIP + ":7580";
-                            communicationSocket = new ClientWebSocket();
-                            await ConnectAsync(url);
+                            Url = "ws://" + DeviceIP + ":7580";
+                            CommunicationSocket = new ClientWebSocket();
+                            await ConnectAsync(Url);
                         }
                     }
                 }
@@ -80,14 +96,14 @@ namespace QuestEyes_Server
                 Main.ConnectionStatus.ForeColor = Color.DarkOrange;
             });
 
-            connectionTimeoutTimer = new System.Timers.Timer(10000);
-            connectionTimeoutTimer.Elapsed += OnConnectionTimeout;
-            connectionTimeoutTimer.AutoReset = true;
-            connectionTimeoutTimer.Enabled = true;
+            ConnectionTimeoutTimer = new System.Timers.Timer(10000);
+            ConnectionTimeoutTimer.Elapsed += OnConnectionTimeout;
+            ConnectionTimeoutTimer.AutoReset = true;
+            ConnectionTimeoutTimer.Enabled = true;
 
             try
             {
-                await communicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
+                await CommunicationSocket.ConnectAsync(new Uri(url), CancellationToken.None);
             } catch
             {
                 //ignore
@@ -96,23 +112,23 @@ namespace QuestEyes_Server
             do {
                 try
                 {
-                    await Receive(communicationSocket);
+                    await Receive(CommunicationSocket);
                 } catch
                 {
-                    CloseCommunicationSocket(communicationSocket);
+                    CloseCommunicationSocket(CommunicationSocket);
                 }
-            } while (connected);
+            } while (Connected);
         }
 
         private static void OnConnectionTimeout(object sender, ElapsedEventArgs e)
         {
             //connection failed within 10 seconds...
-            connectionTimeoutTimer.Stop();
-            connectionTimeoutTimer.Close();
+            ConnectionTimeoutTimer.Stop();
+            ConnectionTimeoutTimer.Close();
             SupportFunctions.outConsole("ERROR: Failed to establish connection to device.");
-            communicationSocket.Abort();
-            communicationSocket.Dispose();
-            attemptingConnect = false;
+            CommunicationSocket.Abort();
+            CommunicationSocket.Dispose();
+            AttemptingConnection = false;
         }
 
         public static async Task Send(ClientWebSocket socket, string data) => await socket.SendAsync(Encoding.UTF8.GetBytes(data), WebSocketMessageType.Text, true, CancellationToken.None);
@@ -159,9 +175,9 @@ namespace QuestEyes_Server
         {
             //heartbeat was failed to be received within 10 seconds...
             SupportFunctions.outConsole("ERROR: Device timed out, Disconnecting...");
-            heartbeatTimer.Stop();
-            heartbeatTimer.Close();
-            CloseCommunicationSocket(communicationSocket);
+            HeartbeatTimer.Stop();
+            HeartbeatTimer.Close();
+            CloseCommunicationSocket(CommunicationSocket);
         }
 
         private static async Task TextReceiveAsync(MemoryStream ms)
@@ -179,15 +195,15 @@ namespace QuestEyes_Server
 
             if (messageText.Contains("NAME"))
             {
-                connectionTimeoutTimer.Stop();
-                connectionTimeoutTimer.Close();
+                ConnectionTimeoutTimer.Stop();
+                ConnectionTimeoutTimer.Close();
                 SupportFunctions.outConsole("Successful connection confirmed");
-                connected = true;
-                attemptingConnect = false;
-                heartbeatTimer = new System.Timers.Timer(10000);
-                heartbeatTimer.Elapsed += OnHeartbeatFailure;
-                heartbeatTimer.AutoReset = true;
-                heartbeatTimer.Enabled = true;
+                Connected = true;
+                AttemptingConnection = false;
+                HeartbeatTimer = new System.Timers.Timer(10000);
+                HeartbeatTimer.Elapsed += OnHeartbeatFailure;
+                HeartbeatTimer.AutoReset = true;
+                HeartbeatTimer.Enabled = true;
                 Main.ReconnectButton.Invoke((MethodInvoker)delegate
                 {
                     Main.ReconnectButton.Enabled = true;
@@ -220,15 +236,15 @@ namespace QuestEyes_Server
             }
             if (messageText.Contains("HEARTBEAT"))
             {
-                heartbeatTimer.Interval = 10000;
+                HeartbeatTimer.Interval = 10000;
                 return;
             }
             if (messageText.Contains("EXCESSIVE_FRAME_FAILURE"))
             {
                 SupportFunctions.outConsole("ERROR: Device reported excessive frame failure, disconnecting...");
-                heartbeatTimer.Stop();
-                heartbeatTimer.Close();
-                CloseCommunicationSocket(communicationSocket);
+                HeartbeatTimer.Stop();
+                HeartbeatTimer.Close();
+                CloseCommunicationSocket(CommunicationSocket);
                 return;
             }
             if (messageText.Contains("OTA_MODE_ACTIVE"))
@@ -244,7 +260,6 @@ namespace QuestEyes_Server
             else
             {
                 SupportFunctions.outConsole("Invalid command received from device: " + messageText);
-                return;
             }
         }
 
@@ -263,12 +278,12 @@ namespace QuestEyes_Server
                 Main.BatteryStatus.Text = "Battery percentage: Unknown";
                 Main.FirmwareVersion.Text = "Firmware version: Unknown";
             });
-            packetInfo = Array.Empty<string>();
-            packet = null;
-            url = null;
+            PacketInfo = Array.Empty<string>();
+            Packet = null;
+            Url = null;
 
-            connected = false;
-            attemptingConnect = false;
+            Connected = false;
+            AttemptingConnection = false;
 
             if (DiagnosticsPanel.DiagnosticsOpen)
             {

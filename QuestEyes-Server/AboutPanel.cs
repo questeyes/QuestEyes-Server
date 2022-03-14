@@ -5,9 +5,7 @@ namespace QuestEyes_Server
 {
     public partial class AboutPanel : Form
     {
-        private static bool aboutOpen;
-
-        public static bool AboutOpen { get => aboutOpen; set => aboutOpen = value; }
+        public static bool AboutOpen { get; set; }
 
         public AboutPanel()
         {

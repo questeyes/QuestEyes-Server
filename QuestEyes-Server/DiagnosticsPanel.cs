@@ -5,27 +5,16 @@ namespace QuestEyes_Server
 {
     public partial class DiagnosticsPanel : Form
     {
-        private static bool diagnosticsOpen;
-        private static PictureBox truePicture;
-        private static PictureBox rightPicture;
-        private static PictureBox leftPicture;
-        private static Label decodeError;
-        private static int cannyThreshold;
-        private static int circleAccThreshold;
-        private static int minRad;
-        private static int maxRad;
-        private static int blur;
-
-        public static bool DiagnosticsOpen { get => diagnosticsOpen; set => diagnosticsOpen = value; }
-        public static PictureBox TruePicture { get => truePicture; set => truePicture = value; }
-        public static PictureBox RightPicture { get => rightPicture; set => rightPicture = value; }
-        public static PictureBox LeftPicture { get => leftPicture; set => leftPicture = value; }
-        public static Label DecodeError { get => decodeError; set => decodeError = value; }
-        public static int CannyThreshold { get => cannyThreshold; set => cannyThreshold = value; }
-        public static int CircleAccThreshold { get => circleAccThreshold; set => circleAccThreshold = value; }
-        public static int MinRad { get => minRad; set => minRad = value; }
-        public static int MaxRad { get => maxRad; set => maxRad = value; }
-        public static int Blur { get => blur; set => blur = value; }
+        public static bool DiagnosticsOpen { get; set; }
+        public static PictureBox TruePicture { get; set; }
+        public static PictureBox RightPicture { get; set; }
+        public static PictureBox LeftPicture { get; set; }
+        public static Label DecodeError { get; set; }
+        public static int CannyThreshold { get; set; }
+        public static int CircleAccThreshold { get; set; }
+        public static int MinRad { get; set; }
+        public static int MaxRad { get; set; }
+        public static int Blur { get; set; }
 
         public DiagnosticsPanel()
         {

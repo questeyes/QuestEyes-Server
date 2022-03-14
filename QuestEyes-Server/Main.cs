@@ -7,22 +7,13 @@ namespace QuestEyes_Server
     public partial class Main : Form
     {
         public static readonly string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
-
-        private static DiagnosticsPanel diagnosticsWindow;
-        private static Label connectionStatus;
-        private static Label batteryStatus;
-        private static Label firmwareVersion;
-        private static Button reconnectButton;
-        private static Button updateButton;
-        private static RichTextBox console;
-
-        public static DiagnosticsPanel DiagnosticsWindow { get => diagnosticsWindow; set => diagnosticsWindow = value; }
-        public static Label ConnectionStatus { get => connectionStatus; set => connectionStatus = value; }
-        public static Label BatteryStatus { get => batteryStatus; set => batteryStatus = value; }
-        public static Label FirmwareVersion { get => firmwareVersion; set => firmwareVersion = value; }
-        public static Button ReconnectButton { get => reconnectButton; set => reconnectButton = value; }
-        public static Button UpdateButton { get => updateButton; set => updateButton = value; }
-        public static RichTextBox Console { get => console; set => console = value; }
+        public static DiagnosticsPanel DiagnosticsWindow { get; set; }
+        public static Label ConnectionStatus { get; set; }
+        public static Label BatteryStatus { get; set; }
+        public static Label FirmwareVersion { get; set; }
+        public static Button ReconnectButton { get; set; }
+        public static Button UpdateButton { get; set; }
+        public static RichTextBox Console { get; set; }
 
         public Main()
         {
@@ -49,7 +40,7 @@ namespace QuestEyes_Server
             Activated -= AfterLoading;
             Task.Run(() =>
             {
-                InterdeviceNetworkingFramework.Search();
+                _ = InterdeviceNetworkingFramework.Search();
             });
         }
 
@@ -76,9 +67,9 @@ namespace QuestEyes_Server
             SupportFunctions.outConsole("Forcing reconnect per user request...");
             Task.Run(() =>
             {
-                InterdeviceNetworkingFramework.heartbeatTimer.Stop();
-                InterdeviceNetworkingFramework.heartbeatTimer.Close();
-                InterdeviceNetworkingFramework.CloseCommunicationSocket(InterdeviceNetworkingFramework.communicationSocket);
+                InterdeviceNetworkingFramework.HeartbeatTimer.Stop();
+                InterdeviceNetworkingFramework.HeartbeatTimer.Close();
+                InterdeviceNetworkingFramework.CloseCommunicationSocket(InterdeviceNetworkingFramework.CommunicationSocket);
             });
         }
 

@@ -6,10 +6,7 @@ namespace QuestEyes_Server
 {
     public partial class OSCControlPanel : Form
     {
-
-        private static bool oscOpen;
-
-        public static bool OscOpen { get => oscOpen; set => oscOpen = value; }
+        public static bool OscOpen { get; set; }
 
         public OSCControlPanel()
         {
@@ -22,23 +19,17 @@ namespace QuestEyes_Server
             //check the saved states of the OSC control
             foreach (var setting in OSC_SoftwareControlSystem.OSCSettings.ToList())
             {
-                if (setting.Name == "VRC")
+                if (setting.Name == "VRC" && setting.State == "1")
                 {
-                    if (setting.State == "1")
-                    {
-                        vrcCheckBox.Checked = true;
-                    }
+                    vrcCheckBox.Checked = true;
                 }
-                if (setting.Name == "Custom")
+                if (setting.Name == "Custom" && setting.State == "1")
                 {
                     if (setting.Port !=  "0")
                     {
                         customPortBox.Text = setting.Port;
                     }
-                    if (setting.State == "1")
-                    {
-                        customCheckBox.Checked = true;
-                    }
+                    customCheckBox.Checked = true;
                 }
             }
         }

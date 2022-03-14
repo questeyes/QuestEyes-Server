@@ -12,7 +12,7 @@ namespace QuestEyes_Server
             public string Port { get; set; }
             public string State { get; set; }
         }
-        public static List<OSCSetting> OSCSettings;
+        internal static List<OSCSetting> OSCSettings { get; set; }
 
         public static void generateSettingsStorage()
         {

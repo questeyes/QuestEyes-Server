@@ -1,21 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Net;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
-    public class Updater_Software
+    public static class Updater_Software
     {
-        private static string downloadedInfo;
-        private static string[] versionInfo;
-
-        public static Tuple<bool, string, string> checkForUpdate(WebClient webClient)
+        public static async Task<Tuple<bool, string, string>> checkForUpdate()
         {
+            string downloadedInfo;
             Updater.SoftwareStatusLabel.Text = "Checking for software updates...";
             try
             {
-                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/info");
+                Uri softwareInfo = new("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/info");
+                downloadedInfo = await Updater.httpClient.GetStringAsync(softwareInfo);
             }
             catch
             {
@@ -27,7 +26,7 @@ namespace QuestEyes_Server
 
             Updater.SoftwareProgressBar.Value = 25;
             char[] delims = new[] { '\r', '\n' };
-            versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            string[] versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
             int oldversioncheck = int.Parse(InterdeviceNetworkingFramework.DeviceFirmware.Replace(".", ""));
 
@@ -45,7 +44,7 @@ namespace QuestEyes_Server
             }
         }
 
-        public static void beginUpdateProceedure(string newVersion, string changelog)
+        public static async Task beginUpdateProceedure(string newVersion, string changelog)
         {
             DialogResult updatePrompt = MessageBox.Show(
                 "Update software to version " + newVersion + "?\n\n" + newVersion + " changelog: \n" + changelog,
@@ -55,14 +54,16 @@ namespace QuestEyes_Server
                 SupportFunctions.outConsole("Software update accepted by user.");
 
                 //download it and verify it as official and not corrupt
-                using (var webClient = new WebClient())
+                using (Updater.httpClient)
                 {
                     SupportFunctions.outConsole("Downloading software update file...");
                     Updater.SoftwareStatusLabel.Text = "Downloading software update...";
                     Directory.CreateDirectory(Main.storageFolder);
                     try
                     {
-                        webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/QE_SOFT_UPDATE_latest.exe", Main.storageFolder + "\\QE_SOFT_UPDATE_latest.exe");
+                        Uri softwarePackage = new("https://cdn.stevenwheeler.co.uk/QuestEyes/Software/QE_SOFT_UPDATE_latest.exe");
+                        byte[] downloadedFile = await Updater.httpClient.GetByteArrayAsync(softwarePackage);
+                        File.WriteAllBytes(Main.storageFolder + "\\QE_SOFT_UPDATE_latest.exe", downloadedFile);
                     }
                     catch
                     {

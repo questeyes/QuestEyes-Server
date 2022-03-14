@@ -1,21 +1,20 @@
 ﻿using System;
 using System.IO;
-using System.Net;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
-    public class Updater_Firmware
+    public static class Updater_Firmware
     {
         private static string downloadedInfo;
-        private static string[] versionInfo;
 
-        public static Tuple<bool, string, string> checkForUpdate(WebClient webClient)
+        public static async Task<Tuple<bool, string, string>> checkForUpdate()
         {
             try
             {
-                downloadedInfo = webClient.DownloadString("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/info");
+                Uri firmwareInfo = new("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/info");
+                downloadedInfo = await Updater.httpClient.GetStringAsync(firmwareInfo);
             }
             catch
             {
@@ -27,7 +26,7 @@ namespace QuestEyes_Server
 
             Updater.FirmwareProgressBar.Value = 20;
             char[] delims = new[] { '\r', '\n' };
-            versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
+            string[] versionInfo = downloadedInfo.Split(delims, StringSplitOptions.RemoveEmptyEntries);
             int newversioncheck = int.Parse(versionInfo[0].Replace(".", ""));
             int oldversioncheck = int.Parse(InterdeviceNetworkingFramework.DeviceFirmware.Replace(".", ""));
 
@@ -61,14 +60,16 @@ namespace QuestEyes_Server
                 await delayOTAModeCheck();
 
                 //download it and verify it as official and not corrupt
-                using (var webClient = new WebClient())
+                using (Updater.httpClient)
                 {
                     SupportFunctions.outConsole("Downloading OTA firmware file...");
                     Updater.FirmwareStatusLabel.Text = "Downloading firmware update...";
                     Directory.CreateDirectory(Main.storageFolder);
                     try
                     {
-                        webClient.DownloadFile("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/QE_UPDATE_IMG_latest.bin", Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
+                        Uri firmwarePackage = new("https://cdn.stevenwheeler.co.uk/QuestEyes/Firmware/QE_UPDATE_IMG_latest.bin");
+                        byte[] downloadedFile = await Updater.httpClient.GetByteArrayAsync(firmwarePackage);
+                        File.WriteAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin", downloadedFile);
                     }
                     catch
                     {
@@ -102,8 +103,7 @@ namespace QuestEyes_Server
                 else
                 {
                     //error occured, tell user to reboot device
-                    DialogResult otaModeError = MessageBox.Show(
-                    "Could not put device in OTA mode.\nPlease reboot device and try again.",
+                    MessageBox.Show("Could not put device in OTA mode.\nPlease reboot device and try again.",
                     "OTA Mode error", MessageBoxButtons.OK);
                     Updater.FirmwareProgressBar.Value = 100;
                     Updater.FirmwareStatusLabel.Text = "Update cancelled";
@@ -128,7 +128,7 @@ namespace QuestEyes_Server
             Updater.CloseButton.Enabled = false;
             SupportFunctions.outConsole("Beginning OTA update of connected device...");
             SupportFunctions.outConsole("Putting device into OTA mode...");
-            _ = InterdeviceNetworkingFramework.Send(InterdeviceNetworkingFramework.communicationSocket, "OTA_MODE");
+            _ = InterdeviceNetworkingFramework.Send(InterdeviceNetworkingFramework.CommunicationSocket, "OTA_MODE");
         }
 
         private static async Task performRemoteUpdateAsync()
@@ -142,7 +142,8 @@ namespace QuestEyes_Server
             byte[] filebuffer = File.ReadAllBytes(Main.storageFolder + "\\QE_UPDATE_IMG_latest.bin");
             SupportFunctions.outConsole("File length: " + filebuffer.Length);
 
-            await InterdeviceNetworkingFramework.SendData(InterdeviceNetworkingFramework.communicationSocket, filebuffer);
+            //TODO: FIX TRANSMISSION TO DEVICE
+            await InterdeviceNetworkingFramework.SendData(InterdeviceNetworkingFramework.CommunicationSocket, filebuffer);
             SupportFunctions.outConsole("File transferred.");
             
             //delete the file off the PC as its no longer required

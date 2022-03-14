@@ -1,24 +1,20 @@
 ﻿using System;
 using System.Net;
+using System.Net.Http;
 using System.Windows.Forms;
 
 namespace QuestEyes_Server
 {
     public partial class Updater : Form
     {
-        private static bool updaterOpen;
-        private static ProgressBar firmwareProgressBar;
-        private static ProgressBar softwareProgressBar;
-        private static Label firmwareStatusLabel;
-        private static Label softwareStatusLabel;
-        private static Button closeButton;
+        public static bool UpdaterOpen { get; set; }
+        public static ProgressBar FirmwareProgressBar { get; set; }
+        public static ProgressBar SoftwareProgressBar { get; set; }
+        public static Label FirmwareStatusLabel { get; set; }
+        public static Label SoftwareStatusLabel { get; set; }
+        public static Button CloseButton { get; set; }
 
-        public static bool UpdaterOpen { get => updaterOpen; set => updaterOpen = value; }
-        public static ProgressBar FirmwareProgressBar { get => firmwareProgressBar; set => firmwareProgressBar = value; }
-        public static ProgressBar SoftwareProgressBar { get => softwareProgressBar; set => softwareProgressBar = value; }
-        public static Label FirmwareStatusLabel { get => firmwareStatusLabel; set => firmwareStatusLabel = value; }
-        public static Label SoftwareStatusLabel { get => softwareStatusLabel; set => softwareStatusLabel = value; }
-        public static Button CloseButton { get => closeButton; set => closeButton = value; }
+        public static HttpClient httpClient { get; set; } = new();
 
         public Updater()
         {
@@ -57,19 +53,18 @@ namespace QuestEyes_Server
         {
             SupportFunctions.outConsole("Connecting to server to check for updates...");
             //check if updates are available at cdn.stevenwheeler.co.uk
-            using var webClient = new WebClient();
             //check for FIRMWARE UPDATE (/QuestEyes/Firmware)
-            (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = Updater_Firmware.checkForUpdate(webClient);
+            (bool firmwareUpdateAvailable, string firmwareVersion, string firmwareChanges) = await Updater_Firmware.checkForUpdate();
             if (firmwareUpdateAvailable)
             {
                 await Updater_Firmware.beginUpdateProceedure(firmwareVersion, firmwareChanges);
             }
 
             //check for SOFTWARE UPDATE (/QuestEyes/Software)
-            (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = Updater_Software.checkForUpdate(webClient);
+            (bool softwareUpdateAvailable, string softwareVersion, string softwareChanges) = await Updater_Software.checkForUpdate();
             if (softwareUpdateAvailable)
             {
-                Updater_Software.beginUpdateProceedure(softwareVersion, softwareChanges);
+                await Updater_Software.beginUpdateProceedure(softwareVersion, softwareChanges);
             }
         }
     }

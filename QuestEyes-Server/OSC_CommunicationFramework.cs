@@ -3,7 +3,7 @@ using System.Threading;
 
 namespace QuestEyes_Server
 {
-    class OSC_CommunicationFramework
+    public static class OSC_CommunicationFramework
     {
         public static void LoadOSCCommunication()
         {
@@ -31,7 +31,7 @@ namespace QuestEyes_Server
         }
     }
 
-    class VRCHAT_OSC
+    public static class VRCHAT_OSC
     {
         private static readonly Socket VRCSender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
         private static readonly Socket VRCReceiver = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
@@ -61,12 +61,16 @@ namespace QuestEyes_Server
         }
     }
 
-    class CUSTOM_OSC
+    public static class CUSTOM_OSC
     {
         private static readonly Socket CustomSender = new(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
         public static void InitCustomConnection(int sendPort)
         {
+            //todo
+
+
+
         }
 
         public static void SendCustom(byte[] data)
