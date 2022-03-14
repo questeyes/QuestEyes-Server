@@ -67,12 +67,15 @@ Contact: steven@stevenwheeler.co.uk
 Website: https://www.stevenwheeler.co.uk
 
 THIS SOFTWARE IS LICENCED UNDER THE GNU GENERAL PUBLIC LICENSE V3.0 (2007)
-Copyright (C) 2007 Free Software Foundation, Inc. &lt;https://fsf.org/&gt;
 https://www.gnu.org/licenses/gpl-3.0.en.html
 
 THERE IS NO WARRANTY FOR THE PROGRAM, TO THE EXTENT PERMITTED BY APPLICABLE LAW.  EXCEPT WHEN OTHERWISE STATED IN WRITING THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS" WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
 
-Licences and attributions:
-Information icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/information)</value>
+Attributions:
+Information icons created by Freepik - Flaticon (https://www.flaticon.com/free-icons/information)
+
+Licences for embedded dependencies (Server):
+OpenCvSharp4 (OpenCV): Licenced under the Apache Licence Version 2.0 (2004). https://www.apache.org/licenses/LICENSE-2.0. 
+There have been no changes to the source code, and use is permitted by this licence in this case.</value>
   </data>
 </root>
