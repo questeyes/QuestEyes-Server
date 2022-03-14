@@ -7,7 +7,6 @@ namespace QuestEyes_Server
     public partial class Main : Form
     {
         public static readonly string storageFolder = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\QuestEyes";
-        public static DiagnosticsPanel DiagnosticsWindow { get; set; }
         public static Label ConnectionStatus { get; set; }
         public static Label BatteryStatus { get; set; }
         public static Label FirmwareVersion { get; set; }
