@@ -24,13 +24,11 @@ namespace QuestEyes_Server
             int right_X = 0, right_Y = 0;
             int left_X = 0, left_Y = 0;
 
-            //turn the byte stream into a bitmap image
+            //turn the byte stream into a memory stream
             MemoryStream stream = new(data);
-            Bitmap bitmap = new(stream);
 
             //create the main material
-            var main = new Mat();
-            main = OpenCvSharp.Extensions.BitmapConverter.ToMat(bitmap);
+            Mat main = Mat.FromStream(stream, ImreadModes.Unchanged);
 
             //create the left and right material
             var left = new Mat();
